@@ -40,7 +40,7 @@ public abstract class SearchEngine {
 		m_nSearchDepth = nDepth;
 	}
 	
-	public void SetEveluator(Eveluation pEval){m_pEval = pEval;};
+	public void SetEveluator(Evaluation pEval){m_pEval = pEval;};
 
 	public void SetMoveGenerator(MoveGenerator pMG){m_pMG = pMG;};
 	
@@ -91,10 +91,10 @@ public abstract class SearchEngine {
 				return 19990 + nDepth;
 		return 0;
 	}
-	protected byte CurPosition[][] = new byte[10][9];
+	protected final byte CurPosition[][] = new byte[10][9];
 	protected CHESSMOVE m_cmBestMove;
 	protected MoveGenerator m_pMG;
-	protected Eveluation m_pEval;
+	protected Evaluation m_pEval;
 	protected int m_nSearchDepth;
 	protected int m_nMaxDepth;
 }
