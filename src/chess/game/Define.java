@@ -35,24 +35,31 @@ public class Define {
 	public final static byte NOCHESS = 0;    //没有棋子
 	
 	public final static byte B_KING = 1;     //黑帅
-	public final static byte B_CAR = 2;      //黑车
-	public final static byte B_HORSE = 3;    //黑马
-	public final static byte B_CANON = 4;    //黑炮
-	public final static byte B_BISHOP = 5;   //黑士
-	public final static byte B_ELEPHANT = 6; //黑象
+	public final static byte B_BISHOP = 2;   //黑士
+	public final static byte B_ELEPHANT = 3; //黑象
+	public final static byte B_HORSE = 4;    //黑马
+	public final static byte B_CAR = 5;      //黑车
+	public final static byte B_CANON = 6;    //黑炮
 	public final static byte B_PAWN = 7;     //黑卒
 	public final static byte B_BEGIN = B_KING;
 	public final static byte B_END = B_PAWN;
 
-	public final static byte R_KING = 8;     //红帅
-	public final static byte R_CAR = 9;      //红车
-	public final static byte R_HORSE = 10;   //红马
-	public final static byte R_CANON = 11;   //红炮
-	public final static byte R_BISHOP = 12;  //红士
-	public final static byte R_ELEPHANT = 13;//红象
-	public final static byte R_PAWN = 14;    //红兵
+	public final static byte R_KING = 8;      //红帅
+	public final static byte R_BISHOP = 9;    //红士
+	public final static byte R_ELEPHANT = 10; //红象
+	public final static byte R_HORSE = 11;    //红马
+	public final static byte R_CAR = 12;      //红车
+	public final static byte R_CANON = 13;    //红炮
+	public final static byte R_PAWN = 14;     //红卒
 	public final static byte R_BEGIN = R_KING;
 	public final static byte R_END = R_PAWN;
+	
+	public final static int SOUND_CAPTURE1 = 1;
+	public final static int SOUND_CAPTURE2 = 2;
+	public final static int SOUND_MOVE1 = 3;
+	public final static int SOUND_MOVE2 = 4;
+	public final static int SOUND_WIN = 5;
+	public final static int SOUND_LOSS = 6;
 
 	final static public boolean IsBlack(int x){
 		return x>=B_BEGIN&&x<=B_END;
@@ -65,24 +72,8 @@ public class Define {
 	}
 
 
-	/*
-	 * 定义一个棋子位置的结构
-	 */
-	public class CHESSMANPOS
-	{
-		public byte x;
-		public byte y;
-	}
 
-	/*
-	 * 一个走法的结构
-	 */
-	public class CHESSMOVE
-	{
-		public short ChessID;	//标明是什么棋子
-		public CHESSMANPOS	From;
-		public CHESSMANPOS	To;			
-		public int Score;		
-	}
+
+
 
 }

@@ -30,14 +30,20 @@ package chess.game;
  *
  */
 
-import chess.game.Define.CHESSMOVE;
 import chess.game.Define;
-import chess.ui.ChessDlg;
+import chess.ui.ChessView;
 
 public class MoveGenerator {
 	protected int m_nMoveCount;
-	public final CHESSMOVE m_MoveList[][] = new CHESSMOVE[10][80];
+	public final ChessMove m_MoveList[][] = new ChessMove[10][80];
 	
+	public MoveGenerator(){
+		for (int i = 0; i < m_MoveList.length; i++){
+			for (int j = 0; j < m_MoveList[i].length; j++){
+				m_MoveList[i][j] = new ChessMove();
+			}
+		}
+	}
 	
 	public int CreatePossibleMove(byte position[][], int nPly,int nSide){
 		int nChessID;
@@ -101,7 +107,7 @@ public class MoveGenerator {
 				}
 			}
 			
-			return m_nMoveCount;
+		return m_nMoveCount;
 	}
 	
 	protected void Gen_KingMove(byte position[][], int i, int j, int nPly){
@@ -425,7 +431,9 @@ public class MoveGenerator {
 		
 	}
 
-	protected int AddMove(int nFromX,int nToX, int nFromY, int nToY,int nPly){
+	protected int AddMove(int nFromX,int nFromY, int nToX, int nToY,int nPly){
+		//System.out.println("nPly: "+nPly+", m_nMoveCount: "+m_nMoveCount);
+		//if (m_nMoveCount >= 80) return m_nMoveCount;
 		m_MoveList[nPly][m_nMoveCount].From.x = (byte) nFromX;
 		m_MoveList[nPly][m_nMoveCount].From.y = (byte) nFromY;
 		m_MoveList[nPly][m_nMoveCount].To.x = (byte) nToX;

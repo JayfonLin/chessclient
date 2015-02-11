@@ -40,7 +40,7 @@ public class NegaScout_TT_HH extends SearchEngine{
 		HH = new HistoryHeuristic();
 	}
 	@Override
-	public void SearchAGoodMove(byte[][] position) {
+	public boolean SearchAGoodMove(byte[][] position) {
 		for (int i = 0; i < position.length; i++){
 			System.arraycopy(position[i], 0, CurPosition[i], 0, position[i].length);
 		}
@@ -52,10 +52,14 @@ public class NegaScout_TT_HH extends SearchEngine{
 //		m_nMaxDepth = m_nSearchDepth;
 //		for (m_nMaxDepth = 1; m_nMaxDepth <= m_nSearchDepth; m_nMaxDepth++)
 		NegaScout(m_nMaxDepth, -20000, 20000);
+		boolean isKill = false;
+		if (position[m_cmBestMove.To.y][m_cmBestMove.To.x] != Define.NOCHESS)
+			isKill = true;
 		MakeMove(m_cmBestMove);
 		for (int i = 0; i < CurPosition.length; i++){
 			System.arraycopy(CurPosition[i], 0, position[i], 0, CurPosition[i].length);
 		}
+		return isKill;
 	}
 
 	protected int NegaScout(int depth, int alpha, int beta){

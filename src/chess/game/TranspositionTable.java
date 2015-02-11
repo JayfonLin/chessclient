@@ -31,10 +31,9 @@ package chess.game;
  */
 
 import java.util.Random;
-import chess.game.Define.CHESSMOVE;
 
 public class TranspositionTable {
-	enum ENTRY_TYPE{exact, lower_bound, upper_bound};
+	public enum ENTRY_TYPE{exact, lower_bound, upper_bound};
 	public class HashItem {
 		long checksum;
 		ENTRY_TYPE entry_type;
@@ -70,7 +69,7 @@ public class TranspositionTable {
 	{
 		int j,k,nChessType;
 		m_HashKey32 = 0;
-		m_HashKey32 = 0;
+		m_HashKey64 = 0;
 		for (j = 0; j < 10; j++)
 			for (k = 0; k < 9; k++)
 			{
@@ -82,7 +81,7 @@ public class TranspositionTable {
 				}
 			}
 	}
-	public void Hash_MakeMove(CHESSMOVE move, byte CurPosition[][])
+	public void Hash_MakeMove(ChessMove move, byte CurPosition[][])
 	{
 		byte nToID, nFromID;
 		nFromID = CurPosition[move.From.y][move.From.x];
@@ -100,7 +99,7 @@ public class TranspositionTable {
 		m_HashKey32 = m_HashKey32 ^ m_nHashKey32[nFromID][move.To.y][move.To.x]; 
 		m_HashKey64 = m_HashKey64 ^ m_ulHashKey64[nFromID][move.To.y][move.To.x]; 
 	}
-	public void Hash_UnMakeMove(CHESSMOVE move, byte nChessID, byte CurPosition[][])
+	public void Hash_UnMakeMove(ChessMove move, byte nChessID, byte CurPosition[][])
 	{
 		byte nToID;
 		nToID = CurPosition[move.To.y][move.To.x];
@@ -124,7 +123,11 @@ public class TranspositionTable {
 
 		x = m_HashKey32 & 0xFFFFF;
 		pht = m_pTT[TableNo][x];
-
+	
+		if (pht == null){
+			//System.out.println("pht hashitem is null");
+			return 66666;
+		}
 	    if (pht.depth >= depth && pht.checksum == m_HashKey64)
 		{
 			switch (pht.entry_type) 
@@ -149,15 +152,15 @@ public class TranspositionTable {
 	public void EnterHashTable(ENTRY_TYPE entry_type, short eval, short depth,int TableNo)
 	{
 		int x;
-		HashItem pht;
-
-		x = m_HashKey32 & 0xFFFFF;//二十位哈希地址
-		pht = m_pTT[TableNo][x];
+		HashItem pht = new HashItem();
 
 		pht.checksum = m_HashKey64;
 		pht.entry_type = entry_type;
 		pht.eval = eval;
 		pht.depth = depth;
+		
+		x = m_HashKey32 & 0xFFFFF;//二十位哈希地址
+		m_pTT[TableNo][x] = pht;
 	}
 
 	private long rand64(){

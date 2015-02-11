@@ -30,28 +30,34 @@ package chess.game;
  *
  */
 
-import chess.game.Define.CHESSMOVE;
 
 public abstract class SearchEngine {
 	
-	public abstract void SearchAGoodMove(byte position[][]);
+	protected final byte CurPosition[][] = new byte[10][9];
+	public ChessMove m_cmBestMove;
+	protected MoveGenerator m_pMG;
+	protected Evaluation m_pEval;
+	protected int m_nSearchDepth;
+	protected int m_nMaxDepth;
+	
+	public abstract boolean SearchAGoodMove(byte position[][]);
 	
 	public void SetSearchDepth(int nDepth){
 		m_nSearchDepth = nDepth;
 	}
 	
-	public void SetEveluator(Evaluation pEval){m_pEval = pEval;};
+	public void SetEvaluator(Evaluation pEval){m_pEval = pEval;};
 
 	public void SetMoveGenerator(MoveGenerator pMG){m_pMG = pMG;};
 	
-	protected byte MakeMove(CHESSMOVE move){
+	protected byte MakeMove(ChessMove move){
 		byte nChessID;
 		nChessID = CurPosition[move.To.y][move.To.x];
 		CurPosition[move.To.y][move.To.x] = CurPosition[move.From.y][move.From.x];
 		CurPosition[move.From.y][move.From.x] = Define.NOCHESS;
 		return nChessID;
 	}
-	protected void UnMakeMove(CHESSMOVE move, byte nChessID){
+	protected void UnMakeMove(ChessMove move, byte nChessID){
 		CurPosition[move.From.y][move.From.x] = CurPosition[move.To.y][move.To.x];
 		CurPosition[move.To.y][move.To.x] = nChessID;
 	}
@@ -91,10 +97,5 @@ public abstract class SearchEngine {
 				return 19990 + nDepth;
 		return 0;
 	}
-	protected final byte CurPosition[][] = new byte[10][9];
-	protected CHESSMOVE m_cmBestMove;
-	protected MoveGenerator m_pMG;
-	protected Evaluation m_pEval;
-	protected int m_nSearchDepth;
-	protected int m_nMaxDepth;
+	
 }

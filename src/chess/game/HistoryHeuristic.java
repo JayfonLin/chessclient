@@ -31,17 +31,23 @@ package chess.game;
  */
 
 import java.util.Arrays;
-import chess.game.Define.CHESSMOVE;
 
 public class HistoryHeuristic {
 	protected final int m_HistoryTable[][] = new int[90][90];
-	protected final CHESSMOVE m_TargetBuff[] = new CHESSMOVE[100]; 
-	public HistoryHeuristic(){}
+	protected final ChessMove m_TargetBuff[] = new ChessMove[100]; 
+	public HistoryHeuristic(){
+		for (int i = 0; i < m_TargetBuff.length; i++){
+			m_TargetBuff[i] = new ChessMove();
+		}
+	}
 		
 	public void ResetHistoryTable(){
-		Arrays.fill(m_HistoryTable, 10);
+		for (int i = 0; i < m_HistoryTable.length; i++){
+			Arrays.fill(m_HistoryTable[i], 10);
+		}
+		
 	}
-	public int GetHistoryScore(CHESSMOVE move){
+	public int GetHistoryScore(ChessMove move){
 		int nFrom, nTo;
 		
 		nFrom = move.From.y*9+move.From.x;
@@ -49,14 +55,14 @@ public class HistoryHeuristic {
 		
 		return m_HistoryTable[nFrom][nTo];
 	}
-	public void EnterHistoryScore(CHESSMOVE move,int depth){
+	public void EnterHistoryScore(ChessMove move,int depth){
 		int nFrom, nTo;
 		nFrom = move.From.y*9+move.From.x;
 		nTo = move.To.y*9+move.To.x;
 
 		m_HistoryTable[nFrom][nTo] += 2<<depth;
 	}
-	public void MergeSort(CHESSMOVE source[], int n, boolean direction){
+	public void MergeSort(ChessMove source[], int n, boolean direction){
 		int s = 1;
 		while(s < n)
 		{
@@ -67,7 +73,7 @@ public class HistoryHeuristic {
 		}
 	}
 	
-	protected void Merge(CHESSMOVE source[], CHESSMOVE target[], int l,int m, int r){
+	protected void Merge(ChessMove source[], ChessMove target[], int l,int m, int r){
 		int i = l;
 		int j = m + 1;
 		int k = l;
@@ -85,7 +91,7 @@ public class HistoryHeuristic {
 					for(int q = i; q <= m; q++)
 						target[k++] = source[q];
 	}
-	protected void MergePass(CHESSMOVE source[], CHESSMOVE target[],
+	protected void MergePass(ChessMove source[], ChessMove target[],
 			final  int s, final  int n, final boolean direction){
 		int i = 0;
 		
@@ -109,7 +115,7 @@ public class HistoryHeuristic {
 			for (int j = i; j <= n - 1; j++)
 				target[j] = source[j];
 	}
-	protected void Merge_A(CHESSMOVE source[], CHESSMOVE target[], int l,int m, int r){
+	protected void Merge_A(ChessMove source[], ChessMove target[], int l,int m, int r){
 		int i = l;
 		int j = m + 1;
 		int k = l;

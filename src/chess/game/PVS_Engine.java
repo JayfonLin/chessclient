@@ -35,7 +35,7 @@ import java.util.Arrays;
 public class PVS_Engine extends SearchEngine{
 
 	@Override
-	public void SearchAGoodMove(byte[][] position) {
+	public boolean SearchAGoodMove(byte[][] position) {
 		
 		for (int i = 0; i < position.length; i++){
 			System.arraycopy(position[i], 0, CurPosition[i], 0, position[i].length);
@@ -51,6 +51,7 @@ public class PVS_Engine extends SearchEngine{
 		for (int i = 0; i < CurPosition.length; i++){
 			System.arraycopy(CurPosition[i], 0, position[i], 0, CurPosition[i].length);
 		}
+		return false;
 	}
 	
 	protected int PrincipalVariation(int depth, int alpha, int beta)

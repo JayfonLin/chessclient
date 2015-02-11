@@ -32,7 +32,6 @@ package chess.game;
 
 
 import java.util.Arrays;
-import chess.game.Define.CHESSMANPOS;
 
 
 public class Evaluation {
@@ -79,6 +78,15 @@ public class Evaluation {
 		{90,90,110,120,120,120,110,90,90},
 		{0,  0, 0,  0,  0,  0,  0,  0,  0},
 	};
+	
+	protected final int m_BaseValue[] = new int[15];
+	protected final int m_FlexValue[] = new int[15];
+	protected final short m_AttackPos[][] = new short[10][9];
+	protected final byte m_GuardPos[][] = new byte[10][9];
+	protected final byte m_FlexibilityPos[][] = new byte[10][9];
+	protected final int m_chessValue[][] = new int[10][9];
+	protected int nPosCount;
+	protected final ChessManPos RelatePos[] = new ChessManPos[20];
 
 	public Evaluation(){
 		m_BaseValue[Define.B_KING] = BASEVALUE_KING; 
@@ -112,18 +120,27 @@ public class Evaluation {
 		m_FlexValue[Define.R_ELEPHANT] = FLEXIBILITY_ELEPHANT; 
 		m_FlexValue[Define.R_CANON] = FLEXIBILITY_CANON; 
 		m_FlexValue[Define.R_PAWN] = FLEXIBILITY_PAWN; 
+		
+		for (int i = 0; i < RelatePos.length; i++){
+			RelatePos[i] = new ChessManPos();
+		}
 	}
 	
-    int count = 0;
+    private int count = 0;
 	public int Evaluate(byte position[][], boolean bIsRedTurn){
 		int i, j, k;
 		int nChessType, nTargetType;
 		count++;
 
-		Arrays.fill(m_chessValue, 0);
-		Arrays.fill(m_AttackPos, 0);
-		Arrays.fill(m_GuardPos, 0);
-		Arrays.fill(m_FlexibilityPos, 0);
+		for (i = 0; i < m_chessValue.length; i++)
+			Arrays.fill(m_chessValue[i], 0);
+		for (i = 0; i < m_AttackPos.length; i++)
+			Arrays.fill(m_AttackPos[i], (short)0);
+		for (i = 0; i < m_GuardPos.length; i++)
+			Arrays.fill(m_GuardPos[i], (byte)0);
+		for (i = 0; i < m_FlexibilityPos.length; i++)
+			Arrays.fill(m_FlexibilityPos[i], (byte)0);
+		
 
 		for(i = 0; i < 10; i++)
 			for(j = 0; j < 9; j++)
@@ -159,7 +176,8 @@ public class Evaluation {
 										return 18888;
 									break;
 								default:
-									m_AttackPos[RelatePos[k].y][RelatePos[k].x] += (30 + (m_BaseValue[nTargetType] - m_BaseValue[nChessType])/10)/10;
+									m_AttackPos[RelatePos[k].y][RelatePos[k].x] 
+											+= (30 + (m_BaseValue[nTargetType] - m_BaseValue[nChessType])/10)/10;
 									break;
 								}
 							}
@@ -557,7 +575,7 @@ public class Evaluation {
 				y++;
 			}
 			
-			y=i-1;	//¤W
+			y=i-1;	
 			flag=false;	
 			while(y>=0)
 			{
@@ -883,12 +901,5 @@ public class Evaluation {
 
 		return 0;
 	}
-	protected final int m_BaseValue[] = new int[15];
-	protected final int m_FlexValue[] = new int[15];
-	protected final short m_AttackPos[][] = new short[10][9];
-	protected final byte m_GuardPos[][] = new byte[10][9];
-	protected final byte m_FlexibilityPos[][] = new byte[10][9];
-	protected final int m_chessValue[][] = new int[10][9];
-	protected int nPosCount;
-	protected final CHESSMANPOS RelatePos[] = new CHESSMANPOS[20];
+
 }
