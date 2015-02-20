@@ -71,7 +71,31 @@ public class Define {
 		return (IsBlack(x)&&IsBlack(y))||(IsRed(x)&&IsRed(y));
 	}
 
-
+	public static int IsGameOver(byte position[][]){
+		int i, j;
+		boolean RedLive = false, BlackLive = false;
+		for (i = 7; i < 10; i++)
+			for (j = 3; j < 6; j++){
+				if (position[i][j] == B_KING) 
+					BlackLive = true;
+				if (position[i][j] == R_KING)
+					RedLive = true;
+			}
+		
+		for (i = 0; i < 3; i++)
+			for (j = 3; j < 6; j++){
+				if (position[i][j] == B_KING)
+					BlackLive = true;
+				if (position[i][j] == R_KING)
+					RedLive = true;
+			}
+		
+		if (RedLive && BlackLive)
+			return 0;
+		if (RedLive)
+			return 1;
+		return -1;
+	}
 
 
 

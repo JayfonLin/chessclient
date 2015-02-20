@@ -31,10 +31,13 @@ package chess.ui;
  */
 
 import chess.activity.R;
+import chess.game.Define;
 import chess.game.Evaluation;
 import chess.game.MoveGenerator;
 import chess.game.NegaScout_TT_HH;
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
@@ -53,29 +56,26 @@ public class GameView extends View{
 	Bitmap[][] chessBitmap;//象棋棋子图片
 	Bitmap chessZouQiflag;//标志走棋
 	Paint paint;//画笔
-	Bitmap[] iscore=new Bitmap[10];//数字图
 	Bitmap boardFrame;//棋盘边框
 	Bitmap background;//背景图
 	Bitmap fort;//炮台
 	Bitmap fort2;//炮台边沿的时候
 	Bitmap fort1;
 	Bitmap selectBM;
-	Bitmap isPlaySound;//开启声音
-	Bitmap noPlaySound;//关闭声音
+
 	int[][] color=new int[20][3];
-	int length;//难度数
-	int huiqibushu=0;
+
 	boolean playChessflag;//下棋方标志位，false为黑方下棋
 	byte ucpcSquares[][]=new byte[10][9];
-	float xMove;
-	float yMove;//移动坐标
-	boolean cMfleg=true;//触摸是否有效
+	boolean isStart = false;
+
+	boolean cmFlag=true;//触摸是否有效
 	boolean isFlage;//是否为第一次下棋
 	boolean seleFlag = false;//是否为选中
 	boolean toFlag = false;
 	int fromx, fromy, tox, toy;
 	int bzcol, bzrow;
-	NegaScout_TT_HH engine;
+	public NegaScout_TT_HH engine;
 
 	Handler handler = new Handler(){
 
@@ -100,7 +100,7 @@ public class GameView extends View{
 	
 			postInvalidate();
 			LoadUtil.ChangeSide();
-			cMfleg = true;
+			cmFlag = true;
 		}
 		
 	};
@@ -117,9 +117,7 @@ public class GameView extends View{
 		initBitmap(); ///初始化图片
 		LoadUtil.sdPlayer=0;//下棋方为红方
 		engine = new NegaScout_TT_HH();
-		engine.SetSearchDepth(4);
-		engine.SetEvaluator(new Evaluation());
-		engine.SetMoveGenerator(new MoveGenerator());
+		
 		endTime=zTime;//总时间	
 	}
 
@@ -138,29 +136,56 @@ public class GameView extends View{
 		canvas.drawColor(Color.argb(255, 0, 0, 0));
 		canvas.drawBitmap(background,0,0, null);
 
-		//if(isnoStart)//如果开始了
 		onDrawWindowindow(canvas,sXtart,sYtart);
 		
-		
-		/*if(yingJMflag)//如果是赢了
-		{
-			canvas.drawBitmap(fugaiTu,sXtart,sYtart, null);//画覆盖图
-			canvas.drawBitmap(winJiemian,sXtart+2.5f*xSpan,sYtart+5f*ySpan, null);//赢背景盖图
-			if(dianjiQueDing)
-			{
-				canvas.drawBitmap(scaleToFit(queDinButton,1.2f),sXtart+3.7f*xSpan,sYtart+8.3f*ySpan, null);//确定按钮
-			}else
-			canvas.drawBitmap(queDinButton,sXtart+3.9f*xSpan,sYtart+8.5f*ySpan, null);//确定按钮
+		switch(Define.IsGameOver(ucpcSquares)){
+		case 0:
+			
+			break;
+		case 1:
+			drawWinOrLoss(true);
+			break;
+		case -1:
+			drawWinOrLoss(false);
+			break;
 		}
-		else if(shuJMflag)//输了
-		{
-			canvas.drawBitmap(fugaiTu,sXtart,sYtart, null);//画覆盖图
-			canvas.drawBitmap(loseJiemian,sXtart+2.5f*xSpan,sYtart+5f*ySpan, null);//赢背景盖图
-			if(dianjiQueDing){
-				canvas.drawBitmap(scaleToFit(queDinButton,1.2f),sXtart+3.7f*xSpan,sYtart+8.3f*ySpan, null);//确定按钮
-			}else			
-			canvas.drawBitmap(queDinButton,sXtart+3.9f*xSpan,sYtart+8.5f*ySpan, null);//确定按钮
-		}*/
+
+	}
+	
+	protected void drawWinOrLoss(final boolean isWin){
+		AlertDialog.Builder builder = new AlertDialog.Builder(father);
+		builder.setTitle("中国象棋");
+		if (isWin){
+			builder.setMessage("你赢了！\n再来一盘？");
+			father.playSound(SOUND_WIN, 0);
+		}else{
+			builder.setMessage("你输了！\n再接再励！\n再来一盘？");
+			father.playSound(SOUND_LOSS, 0);
+		}
+		
+		builder.setPositiveButton("确定", new DialogInterface.OnClickListener() {
+			
+			@Override
+			public void onClick(DialogInterface arg0, int arg1) {
+				LoadUtil.Startup();//初始化棋盘
+				initArrays();//初始化数组
+				seleFlag = false;
+				toFlag = false;
+				father.showWindow();
+				engine = new NegaScout_TT_HH();
+				postInvalidate();
+			}
+		});
+		builder.setNegativeButton("取消", new DialogInterface.OnClickListener() {
+			
+			@Override
+			public void onClick(DialogInterface arg0, int arg1) {
+				//alert.dismiss();
+			}
+		});
+		final AlertDialog alert = builder.create();
+		alert.show();
+			
 	}
 	
 	public void onDrawWindowindow(Canvas canvas,float sXtart,float sYtart)
@@ -238,23 +263,7 @@ public class GameView extends View{
 				drawSelection(canvas, tox, toy);
 			}
 		}
-		/*if(flag)//绘制拖拉效果
-		{
-			//绘制选中要走棋子的标志
-			canvas.drawBitmap(chessZouQiflag,sXtart+(Chess_LoadUtil.FILE_X(Chess_LoadUtil.SRC(xzgz))-2)*xSpan-chessR,
-					sYtart+(Chess_LoadUtil.RANK_Y(Chess_LoadUtil.SRC(xzgz))-2)*ySpan-chessR, null);			
-			canvas.drawBitmap(chessZouQiflag,sXtart+(bzcol+1)*xSpan-chessR,
-			sYtart+(bzrow+1)*ySpan-chessR, null);//绘制移动时移动到的某格
-			
-		}
-		if(cMfleg&&stack.size()>0)//绘制电脑下棋的标志
-		{			
-			canvas.drawBitmap(chessZouQiflag,sXtart+(Chess_LoadUtil.FILE_X(Chess_LoadUtil.SRC(mvResult))-2)*xSpan-chessR,
-					sYtart+(Chess_LoadUtil.RANK_Y(Chess_LoadUtil.SRC(mvResult))-2)*ySpan-chessR, null);
-			
-			canvas.drawBitmap(chessZouQiflag,sXtart+(Chess_LoadUtil.FILE_X(Chess_LoadUtil.DST(mvResult))-2)*xSpan-chessR,
-					sYtart+(Chess_LoadUtil.RANK_Y(Chess_LoadUtil.DST(mvResult))-2)*ySpan-chessR, null);
-		}	*/	
+		
 		
 	}
 	
@@ -303,7 +312,7 @@ public class GameView extends View{
 
 		if(e.getAction()==MotionEvent.ACTION_DOWN)
 		{
-			if(!cMfleg)//如果正在进行电脑下棋
+			if(!cmFlag)//如果正在进行电脑下棋
 			{
 				return false;
 			}
@@ -378,7 +387,7 @@ public class GameView extends View{
 	}
 	
 	public void enermyAct(byte position[][]){
-		cMfleg = false;
+		cmFlag = false;
 		LoadUtil.ChangeSide();
 		new Thread(new EnermyRunnable(handler)).start();
 	}

@@ -40,6 +40,12 @@ public abstract class SearchEngine {
 	protected int m_nSearchDepth;
 	protected int m_nMaxDepth;
 	
+	public SearchEngine(){
+		m_nSearchDepth = 3;
+		m_pMG = new MoveGenerator();
+		m_pEval = new Evaluation();
+	}
+	
 	public abstract boolean SearchAGoodMove(byte position[][]);
 	
 	public void SetSearchDepth(int nDepth){
