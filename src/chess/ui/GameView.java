@@ -149,7 +149,6 @@ public class GameView extends View{
 			drawWinOrLoss(false);
 			break;
 		}
-
 	}
 	
 	protected void drawWinOrLoss(final boolean isWin){
