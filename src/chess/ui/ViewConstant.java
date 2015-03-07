@@ -43,8 +43,8 @@ public class ViewConstant {
 	public static float screen_height;
     public static float screen_width; 
 	public static float height;
-     public static float width; 
-     public static int huiqiBS=2;
+	public static float width; 
+	public static int huiqiBS=2;
 	public static boolean isnoPlaySound=true;//是否播放声音
 	public static boolean isComputerPlayChess=false;//是否为电脑下棋,初始为不是
 	public static boolean isHeqi=false;//是否为和棋
@@ -92,8 +92,7 @@ public class ViewConstant {
 		ySpan=48.0f*yZoom;
 		
 		scoreWidth = 7*xZoom*4f;//时间数字间隔
-		
-		
+
 		windowWidth=200*xZoom;//窗口的大小
 		windowHeight=250*xZoom;
 		
