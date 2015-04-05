@@ -47,8 +47,11 @@ import android.os.Handler;
 import android.os.Message;
 import android.view.MotionEvent;
 import android.view.View;
+
 import static chess.ui.ViewConstant.*;
 import static chess.game.Define.*;
+import static chess.game.ChessLoadUtil.*;
+import static chess.game.Constant.*;
 
 public class GameView extends View{
 
@@ -63,10 +66,8 @@ public class GameView extends View{
 	Bitmap fort1;
 	Bitmap selectBM;
 
-	int[][] color=new int[20][3];
-
 	boolean playChessflag;//下棋方标志位，false为黑方下棋
-	byte ucpcSquares[][]=new byte[10][9];
+	int ucpcSquares[] = new int[BOARD_NUMBER];
 	boolean isStart = false;
 
 	boolean cmFlag=true;//触摸是否有效
@@ -82,10 +83,14 @@ public class GameView extends View{
 		@Override
 		public void handleMessage(Message msg) {
 			seleFlag = toFlag = true;
-			fromx = engine.m_cmBestMove.From.x;
-			fromy = engine.m_cmBestMove.From.y;
-			tox = engine.m_cmBestMove.To.x;
-			toy = engine.m_cmBestMove.To.y;
+			int sqSrc, sqDst;
+			
+			sqSrc = Src(engine.m_cmBestMove.Move);
+			sqDst = Dst(engine.m_cmBestMove.Move);
+			fromx = FileX(sqSrc)-FILE_LEFT;
+			fromy = RankY(sqSrc)-RANK_TOP;
+			tox = FileX(sqDst)-FILE_LEFT;
+			toy = RankY(sqDst)-RANK_TOP;
 			switch(msg.what){
 			case 0:
 				father.playSound(SOUND_MOVE2, 0);
@@ -115,7 +120,7 @@ public class GameView extends View{
 		LoadUtil.Startup();//初始化棋盘
 		initArrays();//初始化数组
 		initBitmap(); ///初始化图片
-		LoadUtil.sdPlayer=0;//下棋方为红方
+		//LoadUtil.sdPlayer=0;//下棋方为红方
 		engine = new NegaScout_TT_HH();
 		
 		endTime=zTime;//总时间	
@@ -123,10 +128,7 @@ public class GameView extends View{
 
 	public void initArrays()
 	{
-		for(int i=0;i<10;i++)
-		{
-			ucpcSquares[i]=LoadUtil.ucpcSquares[i].clone();
-		}
+		ucpcSquares = LoadUtil.pieceSquares.clone();
 	}
 	
 	
@@ -187,8 +189,7 @@ public class GameView extends View{
 			
 	}
 	
-	public void onDrawWindowindow(Canvas canvas,float sXtart,float sYtart)
-	{
+	public void onDrawWindowindow(Canvas canvas,float sXtart,float sYtart){
 		canvas.drawBitmap(boardFrame,0,0, null);
 		
 		//绘制红色填充矩形
@@ -245,17 +246,22 @@ public class GameView extends View{
 		canvas.drawBitmap(fort1,sXtart+9*xSpan-chessR,sYtart+7*ySpan-chessR, null);//绘制兵炮台
 		
 		//画棋子
-		for(int i=0;i<10;i++)//绘制棋子
-		{
-			for(int j=0;j<9;j++)
-			{
-				if(ucpcSquares[i][j]!=NOCHESS)
-				{
-					canvas.drawBitmap(chessBitmap[ucpcSquares[i][j]/8][
-					(ucpcSquares[i][j]-1)%7],sXtart+j*xSpan-chessR+xSpan,sYtart+i*ySpan-chessR+ySpan, null);
-				}
+		Bitmap ToBedrawn = null;
+		for (int i = 0; i < BOARD_NUMBER; ++i){
+			if (!InBoard(i)){
+				continue;
 			}
+			
+			if (ucpcSquares[i] == 0){
+				continue;
+			}
+			ToBedrawn = chessBitmap[ucpcSquares[i] >> 4][ucpcSquares[i]%8];
+			
+			int x = FileX(i)-FILE_LEFT, y = RankY(i)-RANK_TOP;
+			canvas.drawBitmap(ToBedrawn, sXtart+x*xSpan-chessR+xSpan, sYtart+y*ySpan-chessR+ySpan, null);
 		}
+		
+		
 		if (seleFlag){
 			drawSelection(canvas, fromx, fromy);
 			if (toFlag){
@@ -285,6 +291,16 @@ public class GameView extends View{
 		
 		chessBitmap=new Bitmap[][]{//棋子
 				{
+					Bitmap.createScaledBitmap(BitmapFactory.decodeResource(getResources(), R.drawable.rk), chessD, chessD, false),
+					Bitmap.createScaledBitmap(BitmapFactory.decodeResource(getResources(), R.drawable.ra), chessD, chessD, false),
+					Bitmap.createScaledBitmap(BitmapFactory.decodeResource(getResources(), R.drawable.rb), chessD, chessD, false),
+					Bitmap.createScaledBitmap(BitmapFactory.decodeResource(getResources(), R.drawable.rn), chessD, chessD, false),
+					Bitmap.createScaledBitmap(BitmapFactory.decodeResource(getResources(), R.drawable.rr), chessD, chessD, false),
+					Bitmap.createScaledBitmap(BitmapFactory.decodeResource(getResources(), R.drawable.rc), chessD, chessD, false),
+					Bitmap.createScaledBitmap(BitmapFactory.decodeResource(getResources(), R.drawable.rp), chessD, chessD, false),
+
+				},{
+					
 					Bitmap.createScaledBitmap(BitmapFactory.decodeResource(getResources(), R.drawable.bk), chessD, chessD, false),
 					Bitmap.createScaledBitmap(BitmapFactory.decodeResource(getResources(), R.drawable.ba), chessD, chessD, false),
 					Bitmap.createScaledBitmap(BitmapFactory.decodeResource(getResources(), R.drawable.bb), chessD, chessD, false),
@@ -293,15 +309,7 @@ public class GameView extends View{
 					Bitmap.createScaledBitmap(BitmapFactory.decodeResource(getResources(), R.drawable.bc), chessD, chessD, false),
 					Bitmap.createScaledBitmap(BitmapFactory.decodeResource(getResources(), R.drawable.bp), chessD, chessD, false),
 				
-				},{
-					Bitmap.createScaledBitmap(BitmapFactory.decodeResource(getResources(), R.drawable.rk), chessD, chessD, false),
-					Bitmap.createScaledBitmap(BitmapFactory.decodeResource(getResources(), R.drawable.ra), chessD, chessD, false),
-					Bitmap.createScaledBitmap(BitmapFactory.decodeResource(getResources(), R.drawable.rb), chessD, chessD, false),
-					Bitmap.createScaledBitmap(BitmapFactory.decodeResource(getResources(), R.drawable.rn), chessD, chessD, false),
-					Bitmap.createScaledBitmap(BitmapFactory.decodeResource(getResources(), R.drawable.rr), chessD, chessD, false),
-					Bitmap.createScaledBitmap(BitmapFactory.decodeResource(getResources(), R.drawable.rc), chessD, chessD, false),
-					Bitmap.createScaledBitmap(BitmapFactory.decodeResource(getResources(), R.drawable.rp), chessD, chessD, false),
-				
+
 				}
 		};
 	}
@@ -347,26 +355,36 @@ public class GameView extends View{
 			if (seleFlag && toFlag){
 				seleFlag = toFlag = false;
 			}
+			
+			int sqSrc = CoordXY(fromx+FILE_LEFT, fromy+RANK_TOP);
+			int sqDst = CoordXY(bzcol+FILE_LEFT, bzrow+RANK_TOP);
+			int mv = Move(sqSrc, sqDst);
+			
 			if (seleFlag){
+				
+				//System.out.println("which side: "+LoadUtil.GetSide());
+				
 				//走棋
-				if (MoveGenerator.IsValidMove(ucpcSquares, fromx, fromy, bzcol, bzrow)){
-					tox = bzcol;toy = bzrow;
-					toFlag = true;
+				if (MoveGenerator.LeagalMove(ucpcSquares, mv, LoadUtil.GetSide())){
 					int sound_id;
-					if (ucpcSquares[toy][tox] == NOCHESS)
+					if (ucpcSquares[sqDst] == 0)
 						sound_id = SOUND_MOVE1;
 					else sound_id = SOUND_CAPTURE1;
-					ucpcSquares[toy][tox] = ucpcSquares[fromy][fromx];
-					ucpcSquares[fromy][fromx] = NOCHESS;
+					ucpcSquares[sqDst] = ucpcSquares[sqSrc];
+					ucpcSquares[sqSrc] = 0;
 					father.playSound(sound_id, 0);
 					enermyAct(ucpcSquares);
-				}else if (IsSameSide(ucpcSquares[fromy][fromx], ucpcSquares[bzrow][bzcol])){
+					
+					tox = FileX(sqDst)-FILE_LEFT;
+					toy = RankY(sqDst)-RANK_TOP;
+					toFlag = true;
+				}else if (SameSide(ucpcSquares[sqSrc], ucpcSquares[sqDst])){
 					fromx = bzcol; fromy = bzrow;
 					seleFlag = true;
 				}
 				
 			}else{
-				if (ucpcSquares[bzrow][bzcol] != NOCHESS && ucpcSquares[bzrow][bzcol] >= R_BEGIN){
+				if (IsRed(ucpcSquares[sqDst])){
 					seleFlag = true; toFlag = false;
 					fromx = bzcol;fromy = bzrow;
 				}else{
@@ -385,7 +403,7 @@ public class GameView extends View{
 		canvas.drawBitmap(selectBM,sXtart+(x+1)*xSpan-chessR,sYtart+(y+1)*ySpan-chessR, null);
 	}
 	
-	public void enermyAct(byte position[][]){
+	public void enermyAct(int squares[]){
 		cmFlag = false;
 		LoadUtil.ChangeSide();
 		new Thread(new EnermyRunnable(handler)).start();

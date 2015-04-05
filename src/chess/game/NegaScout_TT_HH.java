@@ -1,70 +1,64 @@
 package chess.game;
 
 /**
- * NegaScout_TT_HH.java 
- * chess 1.0
- * Date 2015/02/05
- * 
- * COPYRIGHT NOTES
- * ---------------
- * This source code is a part of chess which is designed for bachelor thesis.
- * You may use, compile or redistribute it as part of your application for free. 
- * You cannot redistribute sources without the official agreement of the author. 
- * If distribution of your application which contents code below was occurred, place
- * e-mail <linjiafang33@163.com> on it is to be appreciated.
- * This code can be used WITHOUT ANY WARRANTIES on your own risk.
- * 
- * Jayfon Lin <linjiafang33@163.com>
- * 
- * ---------------
- * 版权声明
- * ---------------
- * 本文件所含之代码是学士论文设计中国象棋的一部分
- * 您可以免费的使用, 编译 或者作为您应用程序的一部分。 
- * 但，您不能在未经作者书面许可的情况下分发此源代码。 
- * 如果您的应用程序使用了这些代码，在您的应用程序界面上 
- * 放入 e-mail <linjiafang33@163.com>是令人欣赏的做法。
- * 此代码并不含有任何保证，使用者当自承风险。
- * 
- * 林家访 <linjiafang33@163.com>
- *
+ * Created 2015-02-05
+ * @author jeff
  */
 
 import chess.game.TranspositionTable.ENTRY_TYPE;
+import static chess.game.ChessLoadUtil.*;
+import static chess.game.Constant.*;
 
 public class NegaScout_TT_HH extends SearchEngine{
 	protected TranspositionTable TT;
 	protected HistoryHeuristic HH;
+	protected final int moves[] = new int[80];
+	
 	public NegaScout_TT_HH(){
 		TT = new TranspositionTable();
 		HH = new HistoryHeuristic();
 	}
+	
 	@Override
-	public boolean SearchAGoodMove(byte[][] position) {
-		for (int i = 0; i < position.length; i++){
-			System.arraycopy(position[i], 0, CurPosition[i], 0, position[i].length);
-		}
+	public boolean SearchAGoodMove(int[] squares) {
+		
+		System.arraycopy(squares, 0, CurPosition, 0, squares.length);
 		m_nMaxDepth = m_nSearchDepth;
 		TT.CalculateInitHashKey(CurPosition);
 		HH.ResetHistoryTable();
 //		m_nMaxDepth = 1;
-//		NegaScout(m_nMaxDepth, -20000, 20000);
+//		NegaScout(m_nMaxDepth, -Constant.INFINITY, Constant.INFINITY);
 //		m_nMaxDepth = m_nSearchDepth;
 //		for (m_nMaxDepth = 1; m_nMaxDepth <= m_nSearchDepth; m_nMaxDepth++)
-		NegaScout(m_nMaxDepth, -20000, 20000);
+		NegaScout(m_nMaxDepth, -Constant.INFINITY, Constant.INFINITY);
+		
 		boolean isKill = false;
-		if (position[m_cmBestMove.To.y][m_cmBestMove.To.x] != Define.NOCHESS)
+		int sqDst = ChessLoadUtil.Dst(m_cmBestMove.Move);
+		if (CurPosition[sqDst] != 0)
 			isKill = true;
+		
+		int bestscore = TT.LookUpHashTable(-Constant.INFINITY, Constant.INFINITY, m_nMaxDepth, 1); 
+		int mmm = m_cmBestMove.Move;
+		System.out.printf("best_move [eval:%d, from<%d, %d>, to<%d, %d>]\n",
+				bestscore, (RankY(Src(mmm))-FILE_LEFT+1), (FileX(Src(mmm))-RANK_TOP+1),
+				(RankY(Dst(mmm))-FILE_LEFT+1), (FileX(Dst(mmm))-RANK_TOP+1));
+		
 		MakeMove(m_cmBestMove);
-		for (int i = 0; i < CurPosition.length; i++){
-			System.arraycopy(CurPosition[i], 0, position[i], 0, CurPosition[i].length);
-		}
+		
+		System.arraycopy(CurPosition, 0, squares, 0, CurPosition.length);
 		return isKill;
 	}
 
+	/**
+	 * 负极大值搜索函数
+	 * @param depth 表示节点离叶子节点的层数
+	 * @param alpha
+	 * @param beta
+	 * @return
+	 */
 	protected int NegaScout(int depth, int alpha, int beta){
 		int Count,i;
-		byte type;
+		int type;
 		int a,b,t;
 		int side;
 		int score;
@@ -73,71 +67,78 @@ public class NegaScout_TT_HH extends SearchEngine{
 		if (i != 0)
 			return i;
 		
-		side = (m_nMaxDepth-depth)%2;
+		side = 1-(m_nMaxDepth-depth)%2;
 		
 		score = TT.LookUpHashTable(alpha, beta, depth, side); 
-		if (score != 66666) 
+		if (score != Constant.INVALID_SCORE) 
 			return score;
 		
-		if (depth <= 0)	
+		if (depth <= 0)	//叶子节点取估值
 		{
-			score = m_pEval.Evaluate(CurPosition, side != 0);
+			score = m_pEval.Evaluate(CurPosition, side == 0);
 			TT.EnterHashTable(ENTRY_TYPE.exact, (short)score, (short)depth, side);
 			return score;
 		}
 		
-		Count = m_pMG.CreatePossibleMove(CurPosition, depth, side);
+		//m_nMoveCount = 0;
+		Count = m_pMG.CreatePossibleMove(CurPosition, moves, depth, side);
+		AddMoves(Count, depth);
 		
-		for (i=0;i<Count;i++) 
+		for (i = 0; i < Count; ++i) 
 		{
-			m_pMG.m_MoveList[depth][i].Score = 
-				HH.GetHistoryScore(m_pMG.m_MoveList[depth][i]);
+			m_MoveList[depth][i].Score = HH.GetHistoryScore(m_MoveList[depth][i]);
 		}
-		HH.MergeSort(m_pMG.m_MoveList[depth], Count, false);
+		HH.MergeSort(m_MoveList[depth], Count, false);
 		
-		int bestmove=-1;
+		int bestmove = -1;
 		
 	    a = alpha;
 	    b = beta;
 	    int eval_is_exact = 0;
-	    for ( i = 0; i < Count; i++ ) 
-		{
-			TT.Hash_MakeMove(m_pMG.m_MoveList[depth][i], CurPosition);
-			type = MakeMove(m_pMG.m_MoveList[depth][i]);
+	    for (i = 0; i < Count; ++i){
+			TT.Hash_MakeMove(m_MoveList[depth][i], CurPosition);
+			type = MakeMove(m_MoveList[depth][i]);
 			
-			t = -NegaScout(depth-1 , -b, -a );
+			//递归搜索子节点，对第一个节点是全窗口，其后是空窗探测
+			t = -NegaScout(depth-1 , -b, -a);
 			
-			if (t > a && t < beta && i > 0) 
-			{
-				a = -NegaScout (depth-1, -beta, -t );     /* re-search */
-				eval_is_exact = 1;
+			//对于第一个后的节点，如果上面的搜索fail high
+			if (t > a && t < beta && i > 0){
+				a = -NegaScout (depth-1, -beta, -t);     /* re-search */
+				eval_is_exact = 1; //设置数据类型为精确值
 				if(depth == m_nMaxDepth)
-					m_cmBestMove = m_pMG.m_MoveList[depth][i];
-				bestmove = i;
+					m_cmBestMove = m_MoveList[depth][i];
+				bestmove = i; //记住最佳走法的位置
 			}
-			TT.Hash_UnMakeMove(m_pMG.m_MoveList[depth][i],type, CurPosition); 
-			UnMakeMove(m_pMG.m_MoveList[depth][i],type); 
-			if (a < t)
-			{
+			
+			TT.Hash_UnMakeMove(m_MoveList[depth][i], type, CurPosition); 
+			UnMakeMove(m_MoveList[depth][i],type); 
+			if (a < t){
 				eval_is_exact = 1;
-				a=t;
+				a = t;
 				if(depth == m_nMaxDepth)
-					m_cmBestMove = m_pMG.m_MoveList[depth][i];
+					m_cmBestMove = m_MoveList[depth][i];
 			}
-			if ( a >= beta ) 
+			if (a >= beta) 
 			{
-				TT.EnterHashTable(ENTRY_TYPE.lower_bound, (short)a, (short)depth,side);
-				HH.EnterHistoryScore(m_pMG.m_MoveList[depth][i], depth);
+				TT.EnterHashTable(ENTRY_TYPE.lower_bound, (short)a, (short)depth, side);
+				HH.EnterHistoryScore(m_MoveList[depth][i], depth);
 				return a;
 			}
 			b = a + 1;                      /* set new null window */
 		}
 		if (bestmove != -1)
-		HH.EnterHistoryScore(m_pMG.m_MoveList[depth][bestmove], depth);
+			HH.EnterHistoryScore(m_MoveList[depth][bestmove], depth);
 		if (eval_is_exact != 0) 
-			TT.EnterHashTable(ENTRY_TYPE.exact, (short)a, (short)depth,side);
+			TT.EnterHashTable(ENTRY_TYPE.exact, (short)a, (short)depth, side);
 		else 
-			TT.EnterHashTable(ENTRY_TYPE.upper_bound, (short)a, (short)depth,side);
+			TT.EnterHashTable(ENTRY_TYPE.upper_bound, (short)a, (short)depth, side);
 		return a;
+	}
+	
+	protected void AddMoves(int count, int nPly){
+		for (int i = 0; i < count; ++i){
+			m_MoveList[nPly][i].Move = moves[i];
+		}
 	}
 }
