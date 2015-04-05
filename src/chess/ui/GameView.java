@@ -1,38 +1,12 @@
 package chess.ui;
 
 /**
- * GameView.java 
- * chess 1.0
- * Date 2015/02/09
- * 
- * COPYRIGHT NOTES
- * ---------------
- * This source code is a part of chess which is designed for bachelor thesis.
- * You may use, compile or redistribute it as part of your application for free. 
- * You cannot redistribute sources without the official agreement of the author. 
- * If distribution of your application which contents code below was occurred, place
- * e-mail <linjiafang33@163.com> on it is to be appreciated.
- * This code can be used WITHOUT ANY WARRANTIES on your own risk.
- * 
- * Jayfon Lin <linjiafang33@163.com>
- * 
- * ---------------
- * 版权声明
- * ---------------
- * 本文件所含之代码是学士论文设计中国象棋的一部分
- * 您可以免费的使用, 编译 或者作为您应用程序的一部分。 
- * 但，您不能在未经作者书面许可的情况下分发此源代码。 
- * 如果您的应用程序使用了这些代码，在您的应用程序界面上 
- * 放入 e-mail <linjiafang33@163.com>是令人欣赏的做法。
- * 此代码并不含有任何保证，使用者当自承风险。
- * 
- * 林家访 <linjiafang33@163.com>
- *
+ * Created on 2015-02-09
+ * @author jeff
  */
 
 import chess.activity.R;
 import chess.game.Define;
-import chess.game.Evaluation;
 import chess.game.MoveGenerator;
 import chess.game.NegaScout_TT_HH;
 import android.app.AlertDialog;
@@ -57,7 +31,7 @@ public class GameView extends View{
 
 	MainActivity father;
 	Bitmap[][] chessBitmap;//象棋棋子图片
-	Bitmap chessZouQiflag;//标志走棋
+	//Bitmap chessZouQiflag;//标志走棋
 	Paint paint;//画笔
 	Bitmap boardFrame;//棋盘边框
 	Bitmap background;//背景图
@@ -113,32 +87,30 @@ public class GameView extends View{
 	public GameView(Context context) {
 		super(context);
 		this.father=(MainActivity)context;	
+		initGame();
+	}
+	
+	public void initGame(){
 		setFocusable(true);
 		setKeepScreenOn(true);
 		paint = new Paint();//创建画笔
 		paint.setAntiAlias(true);//打开抗锯齿
+		
 		LoadUtil.Startup();//初始化棋盘
-		initArrays();//初始化数组
+		ucpcSquares = LoadUtil.pieceSquares.clone();
 		initBitmap(); ///初始化图片
-		//LoadUtil.sdPlayer=0;//下棋方为红方
 		engine = new NegaScout_TT_HH();
 		
 		endTime=zTime;//总时间	
 	}
-
-	public void initArrays()
-	{
-		ucpcSquares = LoadUtil.pieceSquares.clone();
-	}
 	
 	
 	@Override
-	public void onDraw(Canvas canvas)
-	{		
+	public void onDraw(Canvas canvas){		
 		canvas.drawColor(Color.argb(255, 0, 0, 0));
-		canvas.drawBitmap(background,0,0, null);
+		canvas.drawBitmap(background, 0, 0, null);
 
-		onDrawWindowindow(canvas,sXtart,sYtart);
+		onDrawWindowindow(canvas, sXtart, sYtart);
 		
 		switch(Define.IsGameOver(ucpcSquares)){
 		case 0:
@@ -169,7 +141,7 @@ public class GameView extends View{
 			@Override
 			public void onClick(DialogInterface arg0, int arg1) {
 				LoadUtil.Startup();//初始化棋盘
-				initArrays();//初始化数组
+				ucpcSquares = LoadUtil.pieceSquares.clone();
 				seleFlag = false;
 				toFlag = false;
 				father.showWindow();
@@ -189,16 +161,16 @@ public class GameView extends View{
 			
 	}
 	
-	public void onDrawWindowindow(Canvas canvas,float sXtart,float sYtart){
-		canvas.drawBitmap(boardFrame,0,0, null);
+	public void onDrawWindowindow(Canvas canvas, float sXtart, float sYtart){
+		canvas.drawBitmap(boardFrame, 0, 0, null);
 		
 		//绘制红色填充矩形
 		paint.setColor(Color.RED);//设置画笔颜色
 		paint.setStrokeWidth(3);//设置线的粗细
 		
 		//画竖线
-		canvas.drawLine(sXtart+xSpan+0*xSpan,sYtart+ySpan, sXtart+xSpan+xSpan*0, sYtart+ySpan*10, paint);
-		canvas.drawLine(sXtart+xSpan+8*xSpan,sYtart+ySpan, sXtart+xSpan+xSpan*8, sYtart+ySpan*10, paint);
+		canvas.drawLine(sXtart+xSpan+0*xSpan, sYtart+ySpan, sXtart+xSpan+xSpan*0, sYtart+ySpan*10, paint);
+		canvas.drawLine(sXtart+xSpan+8*xSpan, sYtart+ySpan, sXtart+xSpan+xSpan*8, sYtart+ySpan*10, paint);
 		for(int i=1;i<8;i++)//画竖线
 		{
 			canvas.drawLine(sXtart+xSpan+i*xSpan,sYtart+ySpan, sXtart+xSpan+xSpan*i, sYtart+ySpan*5, paint);
@@ -274,7 +246,6 @@ public class GameView extends View{
 	
 	public void initBitmap()
 	{
-		float xZoom=ViewConstant.xZoom;
 		int chessD = (int)(chessR*2);
 		background = Bitmap.createScaledBitmap(BitmapFactory.decodeResource(getResources(), R.drawable.background), 
 				(int)screen_width, (int)screen_height, false); //背景图
@@ -282,7 +253,6 @@ public class GameView extends View{
 				(int)screen_width, (int)screen_height, false); //棋盘
 		selectBM = Bitmap.createScaledBitmap(BitmapFactory.decodeResource(
 				getResources(), R.drawable.selected), chessD, chessD, false);
-		chessZouQiflag=scaleToFit(BitmapFactory.decodeResource(getResources(), R.drawable.selected),xZoom);//标志位
 	
 		//炮台
 		fort = Bitmap.createScaledBitmap(BitmapFactory.decodeResource(getResources(), R.drawable.fort), chessD, chessD, false);
@@ -290,28 +260,23 @@ public class GameView extends View{
 		fort2 = Bitmap.createScaledBitmap(BitmapFactory.decodeResource(getResources(), R.drawable.fort2), chessD, chessD, false);
 		
 		chessBitmap=new Bitmap[][]{//棋子
-				{
-					Bitmap.createScaledBitmap(BitmapFactory.decodeResource(getResources(), R.drawable.rk), chessD, chessD, false),
-					Bitmap.createScaledBitmap(BitmapFactory.decodeResource(getResources(), R.drawable.ra), chessD, chessD, false),
-					Bitmap.createScaledBitmap(BitmapFactory.decodeResource(getResources(), R.drawable.rb), chessD, chessD, false),
-					Bitmap.createScaledBitmap(BitmapFactory.decodeResource(getResources(), R.drawable.rn), chessD, chessD, false),
-					Bitmap.createScaledBitmap(BitmapFactory.decodeResource(getResources(), R.drawable.rr), chessD, chessD, false),
-					Bitmap.createScaledBitmap(BitmapFactory.decodeResource(getResources(), R.drawable.rc), chessD, chessD, false),
-					Bitmap.createScaledBitmap(BitmapFactory.decodeResource(getResources(), R.drawable.rp), chessD, chessD, false),
-
-				},{
-					
-					Bitmap.createScaledBitmap(BitmapFactory.decodeResource(getResources(), R.drawable.bk), chessD, chessD, false),
-					Bitmap.createScaledBitmap(BitmapFactory.decodeResource(getResources(), R.drawable.ba), chessD, chessD, false),
-					Bitmap.createScaledBitmap(BitmapFactory.decodeResource(getResources(), R.drawable.bb), chessD, chessD, false),
-					Bitmap.createScaledBitmap(BitmapFactory.decodeResource(getResources(), R.drawable.bn), chessD, chessD, false),
-					Bitmap.createScaledBitmap(BitmapFactory.decodeResource(getResources(), R.drawable.br), chessD, chessD, false),
-					Bitmap.createScaledBitmap(BitmapFactory.decodeResource(getResources(), R.drawable.bc), chessD, chessD, false),
-					Bitmap.createScaledBitmap(BitmapFactory.decodeResource(getResources(), R.drawable.bp), chessD, chessD, false),
-				
-
-				}
-		};
+		{
+			Bitmap.createScaledBitmap(BitmapFactory.decodeResource(getResources(), R.drawable.rk), chessD, chessD, false),
+			Bitmap.createScaledBitmap(BitmapFactory.decodeResource(getResources(), R.drawable.ra), chessD, chessD, false),
+			Bitmap.createScaledBitmap(BitmapFactory.decodeResource(getResources(), R.drawable.rb), chessD, chessD, false),
+			Bitmap.createScaledBitmap(BitmapFactory.decodeResource(getResources(), R.drawable.rn), chessD, chessD, false),
+			Bitmap.createScaledBitmap(BitmapFactory.decodeResource(getResources(), R.drawable.rr), chessD, chessD, false),
+			Bitmap.createScaledBitmap(BitmapFactory.decodeResource(getResources(), R.drawable.rc), chessD, chessD, false),
+			Bitmap.createScaledBitmap(BitmapFactory.decodeResource(getResources(), R.drawable.rp), chessD, chessD, false),
+		},{
+			Bitmap.createScaledBitmap(BitmapFactory.decodeResource(getResources(), R.drawable.bk), chessD, chessD, false),
+			Bitmap.createScaledBitmap(BitmapFactory.decodeResource(getResources(), R.drawable.ba), chessD, chessD, false),
+			Bitmap.createScaledBitmap(BitmapFactory.decodeResource(getResources(), R.drawable.bb), chessD, chessD, false),
+			Bitmap.createScaledBitmap(BitmapFactory.decodeResource(getResources(), R.drawable.bn), chessD, chessD, false),
+			Bitmap.createScaledBitmap(BitmapFactory.decodeResource(getResources(), R.drawable.br), chessD, chessD, false),
+			Bitmap.createScaledBitmap(BitmapFactory.decodeResource(getResources(), R.drawable.bc), chessD, chessD, false),
+			Bitmap.createScaledBitmap(BitmapFactory.decodeResource(getResources(), R.drawable.bp), chessD, chessD, false),
+		}};
 	}
 
 	@Override
@@ -361,8 +326,6 @@ public class GameView extends View{
 			int mv = Move(sqSrc, sqDst);
 			
 			if (seleFlag){
-				
-				//System.out.println("which side: "+LoadUtil.GetSide());
 				
 				//走棋
 				if (MoveGenerator.LeagalMove(ucpcSquares, mv, LoadUtil.GetSide())){

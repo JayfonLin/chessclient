@@ -37,11 +37,11 @@ public class NegaScout_TT_HH extends SearchEngine{
 		if (CurPosition[sqDst] != 0)
 			isKill = true;
 		
-		int bestscore = TT.LookUpHashTable(-Constant.INFINITY, Constant.INFINITY, m_nMaxDepth, 1); 
+		/*int bestscore = TT.LookUpHashTable(-Constant.INFINITY, Constant.INFINITY, m_nMaxDepth, 1); 
 		int mmm = m_cmBestMove.Move;
 		System.out.printf("best_move [eval:%d, from<%d, %d>, to<%d, %d>]\n",
 				bestscore, (RankY(Src(mmm))-FILE_LEFT+1), (FileX(Src(mmm))-RANK_TOP+1),
-				(RankY(Dst(mmm))-FILE_LEFT+1), (FileX(Dst(mmm))-RANK_TOP+1));
+				(RankY(Dst(mmm))-FILE_LEFT+1), (FileX(Dst(mmm))-RANK_TOP+1));*/
 		
 		MakeMove(m_cmBestMove);
 		

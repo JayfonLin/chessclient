@@ -82,22 +82,22 @@ public class MainActivity extends Activity {
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		//设置全屏显示
-        requestWindowFeature(Window.FEATURE_NO_TITLE); 
-        getWindow().setFlags(
-        		WindowManager.LayoutParams.FLAG_FULLSCREEN ,  
-                WindowManager.LayoutParams.FLAG_FULLSCREEN
-        );
-      //设置横屏模式
-		setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
-		setVolumeControlStream(AudioManager.STREAM_MUSIC);//游戏过程中只允许多媒体音量,而不允许通化音量
-        initPm();//调整屏幕分辨率
-        initSound();//初始化声音资源
-        
-        gameView = new GameView(this);
-        
+		init();
+	}
+
+	public void init(){
+		initApp();
+		initPm();//调整屏幕分辨率
+		initSound();//初始化声音资源
+		
+		gameView = new GameView(this);
 		setContentView(gameView);
+		
 		initViews();
+		popWindow();
+	}
+	
+	public void popWindow(){
 		new Handler().postDelayed(new Runnable() {
 			
 			@Override
@@ -105,10 +105,19 @@ public class MainActivity extends Activity {
 				showWindow();
 			}
 		}, 500);
-		
 	}
 
-
+	public void initApp(){
+		//设置全屏显示
+        requestWindowFeature(Window.FEATURE_NO_TITLE); 
+        getWindow().setFlags(
+        		WindowManager.LayoutParams.FLAG_FULLSCREEN ,  
+                WindowManager.LayoutParams.FLAG_FULLSCREEN
+        );
+        //设置横屏模式
+		setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+		setVolumeControlStream(AudioManager.STREAM_MUSIC);//游戏过程中只允许多媒体音量,而不允许通化音量
+	}
 
 	public void initViews(){
 		View popupView = getLayoutInflater().inflate(R.layout.select_depth_popup, null);
@@ -118,7 +127,8 @@ public class MainActivity extends Activity {
 		depth_tv = (TextView) popupView.findViewById(R.id.textView2);
 		
 		View depth_select_popup = getLayoutInflater().inflate(R.layout.level_select, null);
-	    depth_window = new PopupWindow(depth_select_popup, LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT, true);
+	    depth_window = new PopupWindow(depth_select_popup, LayoutParams.MATCH_PARENT, 
+	    		LayoutParams.MATCH_PARENT, true);
 		depth_window.setTouchable(true);
 		depth_window.setOutsideTouchable(true);
 		
@@ -180,8 +190,7 @@ public class MainActivity extends Activity {
 				gameView.engine.SetSearchDepth(searchDepth);
 			};
 		});
-		
-		
+
 	}
 	
 	public void showWindow(){
@@ -206,10 +215,10 @@ public class MainActivity extends Activity {
     //播放声音
     public void playSound(int sound, int loop) 
     {
-    	if(!isnoPlaySound)
-    	{
+    	if(!isnoPlaySound){
     		return;
     	}
+    	
 	    AudioManager mgr = (AudioManager)this.getSystemService(Context.AUDIO_SERVICE);   
 	    float streamVolumeCurrent = mgr.getStreamVolume(AudioManager.STREAM_MUSIC);   
 	    float streamVolumeMax = mgr.getStreamMaxVolume(AudioManager.STREAM_MUSIC);       
@@ -220,36 +229,10 @@ public class MainActivity extends Activity {
 	public void initPm()
     {
     	//获取屏幕分辨率
-        DisplayMetrics dm=new DisplayMetrics();
+        DisplayMetrics dm = new DisplayMetrics();
         getWindowManager().getDefaultDisplay().getMetrics(dm);
-        int tempHeight=(int) (height=dm.heightPixels);
-        int tempWidth=(int) (width=dm.widthPixels); 
-        screen_height = (int) (height=dm.heightPixels);
-        screen_width = (int) (width=dm.widthPixels); 
-        //
-        if(tempHeight>tempWidth)
-        {
-        	height=tempHeight;
-        	width=tempWidth;
-        }
-        else
-        {
-        	height=tempWidth;
-        	width=tempHeight;
-        }
-        float zoomx=width/480;
-		float zoomy=height/800;
-		if(zoomx>zoomy){
-			xZoom=yZoom=zoomy;
-			
-		}else
-		{
-			xZoom=yZoom=zoomx;
-		}
-		sXtart=(width-48*10*xZoom)/2;
-		sYtart=(height-48*11*yZoom)/2;
-
-		initChessViewFinal();
+        
+		ViewConstant.initAll(dm);
     }
 
 	@Override
@@ -258,6 +241,4 @@ public class MainActivity extends Activity {
 		getMenuInflater().inflate(R.menu.main, menu);
 		return true;
 	}
-	
-
 }

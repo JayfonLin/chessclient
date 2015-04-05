@@ -137,7 +137,7 @@ public class Evaluation {
 				m_chessValue[i] += m_FlexValue[nChessType] * m_FlexibilityPos[i];
 				
 				//TODO
-				//m_chessValue[i] += GetPOSValue(i, nChessType);
+				m_chessValue[i] += GetPOSValue(i, nChessType);
 			}
 		}
 	}

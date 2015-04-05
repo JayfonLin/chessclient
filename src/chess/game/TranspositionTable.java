@@ -38,6 +38,7 @@ import static chess.game.ChessLoadUtil.*;
 public class TranspositionTable {
 	
 	public enum ENTRY_TYPE{exact, lower_bound, upper_bound};
+	protected static final int HASH_SIZE = 1024 * (2 << 6);
 	
 	/**
 	 * 哈希表中元素的结构定义
@@ -73,8 +74,13 @@ public class TranspositionTable {
 				m_ulHashKey64[i][j] = rand64();
 			}
 	
-		m_pTT[0] = new HashItem[1024*1024]; //用于存放极大值的节点数据
- 		m_pTT[1] = new HashItem[1024*1024]; //用于存放极小值的节点数据
+		m_pTT[0] = new HashItem[HASH_SIZE]; //用于存放极大值的节点数据
+ 		m_pTT[1] = new HashItem[HASH_SIZE]; //用于存放极小值的节点数据
+ 		
+ 		for (i = 0; i < HASH_SIZE; ++i){
+ 			m_pTT[0][i] = new HashItem();
+ 			m_pTT[1][i] = new HashItem();
+ 		}
 	}
 	
 	public void CalculateInitHashKey(int CurPosition[])
@@ -139,12 +145,12 @@ public class TranspositionTable {
 		int x;
 		HashItem pht;
 
-		x = m_HashKey32 & 0xFFFFF;
+		x = m_HashKey32 & 0xFFFF;
 		pht = m_pTT[TableNo][x];
 	
-		if (pht == null){
+		/*if (pht == null){
 			return Constant.INVALID_SCORE;
-		}
+		}*/
 		
 	    if (pht.depth >= depth && pht.checksum == m_HashKey64){
 			switch (pht.entry_type) {
@@ -167,19 +173,18 @@ public class TranspositionTable {
 	}
 	
 	public void EnterHashTable(ENTRY_TYPE entry_type, short eval, short depth, int TableNo){
-		System.out.printf("evaluate [entry_type:%d, eval:%d, depth:%d, table_no:%d]\n",
-				0, eval, depth, TableNo);
+		/*System.out.printf("evaluate [entry_type:%d, eval:%d, depth:%d, table_no:%d]\n",
+				0, eval, depth, TableNo);*/
 		
-		int x;
-		HashItem pht = new HashItem();
+		int x = m_HashKey32 & 0xFFFF;//二十位哈希地址
+		HashItem pht = m_pTT[TableNo][x];
 
 		pht.checksum = m_HashKey64;
 		pht.entry_type = entry_type;
 		pht.eval = eval;
 		pht.depth = depth;
 		
-		x = m_HashKey32 & 0xFFFFF;//二十位哈希地址
-		m_pTT[TableNo][x] = pht;
+		//m_pTT[TableNo][x] = pht;
 	}
 
 	private long rand64(){
