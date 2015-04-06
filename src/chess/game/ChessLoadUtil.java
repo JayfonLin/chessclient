@@ -1,7 +1,7 @@
 package chess.game;
 
 /**
- * created on 2015-03-21
+ * Created on 2015-03-21
  * @author jeff
  *
  */

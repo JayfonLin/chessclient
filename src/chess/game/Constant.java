@@ -1,7 +1,7 @@
 package chess.game;
 
 /**
- * created on 2015-03-21
+ * Created on 2015-03-21
  * @author jeff
  *
  */
@@ -321,7 +321,7 @@ public class Constant {
 	/**
 	 *棋盘初始值
 	 */
-	/*public final static short BOARD_STARTUP[] = {
+	public final static short BOARD_STARTUP[] = {
 		  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
 		  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
 		  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
@@ -340,9 +340,9 @@ public class Constant {
 		  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
 		  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
 		  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0
-	};*/
+	};
 	
-	public final static short BOARD_STARTUP[] = {
+	/*public final static short BOARD_STARTUP[] = {
 		  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
 		  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
 		  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
@@ -360,6 +360,6 @@ public class Constant {
 		  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
 		  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
 		 
-	};
+	};*/
 	
 }
