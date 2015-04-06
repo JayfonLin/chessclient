@@ -1,13 +1,5 @@
 package chess.ui;
 
-import static chess.ui.ViewConstant.height;
-import static chess.ui.ViewConstant.sXtart;
-import static chess.ui.ViewConstant.sYtart;
-import static chess.ui.ViewConstant.screen_height;
-import static chess.ui.ViewConstant.screen_width;
-import static chess.ui.ViewConstant.width;
-import static chess.ui.ViewConstant.xZoom;
-import static chess.ui.ViewConstant.yZoom;
 import android.util.DisplayMetrics;
 
 /**

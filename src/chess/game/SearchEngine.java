@@ -51,6 +51,9 @@ public abstract class SearchEngine {
 		int sqSrc = ChessLoadUtil.Src(move.Move);
 		int sqDst = ChessLoadUtil.Dst(move.Move);
 		nChessID = CurPosition[sqDst];
+		if (CurPosition[sqSrc] == 0) {
+			System.err.println("source should hava chess");
+		}
 		CurPosition[sqDst] = CurPosition[sqSrc];
 		CurPosition[sqSrc] = 0;
 		move.ChessID = (short)nChessID;
@@ -84,14 +87,14 @@ public abstract class SearchEngine {
 		
 		if (!RedLive)
 			if (i != 0)
-				return 19990 + nDepth;
+				return Constant.LOSS_SCORE + nDepth;
 			else
-				return -19990 - nDepth;
+				return -Constant.LOSS_SCORE - nDepth;
 		if (!BlackLive)
 			if (i != 0)
-				return -19990 - nDepth;
+				return -Constant.LOSS_SCORE - nDepth;
 			else
-				return 19990 + nDepth;
+				return Constant.LOSS_SCORE + nDepth;
 		return 0;
 	}
 	

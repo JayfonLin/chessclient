@@ -37,11 +37,11 @@ public class NegaScout_TT_HH extends SearchEngine{
 		if (CurPosition[sqDst] != 0)
 			isKill = true;
 		
-		/*int bestscore = TT.LookUpHashTable(-Constant.INFINITY, Constant.INFINITY, m_nMaxDepth, 1); 
+		int bestscore = TT.LookUpHashTable(-Constant.INFINITY, Constant.INFINITY, m_nMaxDepth, 1); 
 		int mmm = m_cmBestMove.Move;
 		System.out.printf("best_move [eval:%d, from<%d, %d>, to<%d, %d>]\n",
 				bestscore, (RankY(Src(mmm))-FILE_LEFT+1), (FileX(Src(mmm))-RANK_TOP+1),
-				(RankY(Dst(mmm))-FILE_LEFT+1), (FileX(Dst(mmm))-RANK_TOP+1));*/
+				(RankY(Dst(mmm))-FILE_LEFT+1), (FileX(Dst(mmm))-RANK_TOP+1));
 		
 		MakeMove(m_cmBestMove);
 		
@@ -70,12 +70,23 @@ public class NegaScout_TT_HH extends SearchEngine{
 		side = 1-(m_nMaxDepth-depth)%2;
 		
 		score = TT.LookUpHashTable(alpha, beta, depth, side); 
-		if (score != Constant.INVALID_SCORE) 
+		if (score != Constant.INVALID_SCORE && depth != m_nMaxDepth){
+			/*if (depth == m_nMaxDepth){
+				ChessMove move = new ChessMove();
+				move.Move = TT.LookupBestMove(side);
+				m_cmBestMove = move;
+				
+				System.out.printf("LookupBestMove from<%d, %d>, to<%d, %d>]\n",
+                 (RankY(Src(move.Move))-FILE_LEFT+1), (FileX(Src(move.Move))-RANK_TOP+1),
+				(RankY(Dst(move.Move))-FILE_LEFT+1), (FileX(Dst(move.Move))-RANK_TOP+1));
+				
+			}*/
 			return score;
+		}
 		
 		if (depth <= 0)	//叶子节点取估值
 		{
-			score = m_pEval.Evaluate(CurPosition, side == 0);
+			score = m_pEval.Evaluate(CurPosition, side == 0, depth);
 			TT.EnterHashTable(ENTRY_TYPE.exact, (short)score, (short)depth, side);
 			return score;
 		}
@@ -106,9 +117,11 @@ public class NegaScout_TT_HH extends SearchEngine{
 			if (t > a && t < beta && i > 0){
 				a = -NegaScout (depth-1, -beta, -t);     /* re-search */
 				eval_is_exact = 1; //设置数据类型为精确值
-				if(depth == m_nMaxDepth)
+				if(depth == m_nMaxDepth){
 					m_cmBestMove = m_MoveList[depth][i];
-				bestmove = i; //记住最佳走法的位置
+					//TT.EnterHashBestMove(m_cmBestMove.Move, side);
+				}
+				bestmove = i; //记住最佳走法的位置3
 			}
 			
 			TT.Hash_UnMakeMove(m_MoveList[depth][i], type, CurPosition); 
@@ -116,8 +129,10 @@ public class NegaScout_TT_HH extends SearchEngine{
 			if (a < t){
 				eval_is_exact = 1;
 				a = t;
-				if(depth == m_nMaxDepth)
+				if(depth == m_nMaxDepth) {
 					m_cmBestMove = m_MoveList[depth][i];
+					//TT.EnterHashBestMove(m_cmBestMove.Move, side);
+				}
 			}
 			if (a >= beta) 
 			{

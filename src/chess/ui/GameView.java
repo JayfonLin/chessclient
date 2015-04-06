@@ -69,9 +69,16 @@ public class GameView extends View{
 			case 0:
 				father.playSound(SOUND_MOVE2, 0);
 				break;
+				
 			case 1:
 				father.playSound(SOUND_CAPTURE2, 0);
 				break;
+				
+			case 2:
+				LoadUtil.ChangeSide();
+				cmFlag = true;
+				return;
+				
 			default:
 				father.playSound(SOUND_MOVE2, 0);
 				break;
@@ -380,8 +387,12 @@ public class GameView extends View{
 		@Override
 		public void run() {
 			int what = 0;
-			if(engine.SearchAGoodMove(ucpcSquares))
+			if (Define.IsGameOver(ucpcSquares) != 0){
+				what = 2;
+			}
+			else if(engine.SearchAGoodMove(ucpcSquares)){
 				what = 1;
+			}
 			mHandler.sendEmptyMessage(what);
 		}
 		

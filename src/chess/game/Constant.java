@@ -47,7 +47,8 @@ public class Constant {
 	public final static int BOARD_NUMBER = 256;
 	public final static int PIECE_COUNT = 32;
 	public final static int INVALID_SCORE = Integer.MAX_VALUE;
-	public final static int INFINITY = Integer.MAX_VALUE;
+	public final static int INFINITY = Short.MAX_VALUE;
+	public final static int LOSS_SCORE = Short.MAX_VALUE - 100;
 	
 	/**
 	 *用于快速判断棋子是否在棋盘中的数组
@@ -320,7 +321,7 @@ public class Constant {
 	/**
 	 *棋盘初始值
 	 */
-	public final static short BOARD_STARTUP[] = {
+	/*public final static short BOARD_STARTUP[] = {
 		  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
 		  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
 		  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
@@ -339,9 +340,9 @@ public class Constant {
 		  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
 		  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
 		  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0
-	};
+	};*/
 	
-/*	public final static short BOARD_STARTUP[] = {
+	public final static short BOARD_STARTUP[] = {
 		  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
 		  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
 		  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
@@ -359,6 +360,6 @@ public class Constant {
 		  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
 		  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
 		 
-	};*/
+	};
 	
 }

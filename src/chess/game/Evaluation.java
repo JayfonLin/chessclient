@@ -2,7 +2,7 @@ package chess.game;
 
 /**
  * 
- * created on 2015-02-04
+ * Created on 2015-02-04
  * @author jeff
  */
 
@@ -28,8 +28,6 @@ public class Evaluation {
 	public final static int FLEXIBILITY_HORSE = 12;
 	public final static int FLEXIBILITY_CANNON = 6;
 	public final static int FLEXIBILITY_KING = 0;
-	
-	
 	
 	protected final int m_BaseValue[] = new int[PIECE_COUNT];
 	protected final int m_FlexValue[] = new int[PIECE_COUNT];
@@ -76,7 +74,7 @@ public class Evaluation {
 		
 	}
 	
-	protected int ProtectAttck(int[] squares, boolean bIsRedTurn){
+	protected int ProtectAttck(int[] squares, boolean bIsRedTurn, int depth){
 		int nChessType, nTargetType;
 		int side = bIsRedTurn ? 0 : 1; //0代表红方，1代表黑方
 		int i, k;
@@ -104,11 +102,11 @@ public class Evaluation {
 							switch (nTargetType){
 							case R_KING:
 								if (!bIsRedTurn)
-									return 18888;
+									return Constant.LOSS_SCORE + depth;
 								
 							case B_KING:
 								if (bIsRedTurn)
-									return 18888;
+									return Constant.LOSS_SCORE + depth;
 								
 							default:
 								m_AttackPos[RelatePos[k]] += (30 + (m_BaseValue[nTargetType] 
@@ -137,12 +135,12 @@ public class Evaluation {
 				m_chessValue[i] += m_FlexValue[nChessType] * m_FlexibilityPos[i];
 				
 				//TODO
-				m_chessValue[i] += GetPOSValue(i, nChessType);
+				//m_chessValue[i] += GetPOSValue(i, nChessType);
 			}
 		}
 	}
 	
-	protected int GetChessValues(int[] squares, boolean bIsRedTurn){
+	protected int GetChessValues(int[] squares, boolean bIsRedTurn, int depth){
 		int nHalfvalue, i, nChessType;
 		for (i = 0; i < BOARD_NUMBER; ++i){
 			if (!InBoard(i)){
@@ -173,7 +171,7 @@ public class Evaluation {
 					}
 					else{
 						if (nChessType == R_KING)
-							return 18888;
+							return Constant.LOSS_SCORE + depth;
 						m_chessValue[i] -= nHalfvalue*10;
 						if (m_GuardPos[i] != 0)
 							m_chessValue[i] += nHalfvalue*9;
@@ -199,7 +197,7 @@ public class Evaluation {
 					}
 					else{
 						if (nChessType == B_KING)
-							return 18888;
+							return Constant.LOSS_SCORE + depth;
 						m_chessValue[i] -= nHalfvalue*10;
 						if (m_GuardPos[i] != 0)
 							m_chessValue[i] += nHalfvalue*9;
@@ -245,20 +243,20 @@ public class Evaluation {
 		return  nBlackValue-nRedValue ;
 	}
 	
-	public int Evaluate(int[] squares, boolean bIsRedTurn){
+	public int Evaluate(int[] squares, boolean bIsRedTurn, int depth){
 		
 		Arrays.fill(m_chessValue, 0);
 		Arrays.fill(m_AttackPos, (short)0);
 		Arrays.fill(m_GuardPos, (short)0);
 		Arrays.fill(m_FlexibilityPos, (short)0);
 		
-		int score = ProtectAttck(squares, bIsRedTurn);
+		int score = ProtectAttck(squares, bIsRedTurn, depth);
 		if (score != 0){
 			return score;
 		}
 
 		GetFlexibility(squares);
-		score = GetChessValues(squares, bIsRedTurn);
+		score = GetChessValues(squares, bIsRedTurn, depth);
 		if (score != 0){
 			return score;
 		}

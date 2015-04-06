@@ -20,42 +20,6 @@ public class Define {
 	public final static int SOUND_MOVE2 = 4;
 	public final static int SOUND_WIN = 5;
 	public final static int SOUND_LOSS = 6;
-
-	/*final static public boolean IsBlack(int x){
-		return x>=B_BEGIN&&x<=B_END;
-	}
-	final static public boolean IsRed(int x){
-		return x>=R_BEGIN&&x<=R_END;
-	}
-	final static public boolean IsSameSide(int x, int y){
-		return (IsBlack(x)&&IsBlack(y))||(IsRed(x)&&IsRed(y));
-	}
-
-	public static int IsGameOver(byte position[][]){
-		int i, j;
-		boolean RedLive = false, BlackLive = false;
-		for (i = 7; i < 10; i++)
-			for (j = 3; j < 6; j++){
-				if (position[i][j] == B_KING) 
-					BlackLive = true;
-				if (position[i][j] == R_KING)
-					RedLive = true;
-			}
-		
-		for (i = 0; i < 3; i++)
-			for (j = 3; j < 6; j++){
-				if (position[i][j] == B_KING)
-					BlackLive = true;
-				if (position[i][j] == R_KING)
-					RedLive = true;
-			}
-		
-		if (RedLive && BlackLive)
-			return 0;
-		if (RedLive)
-			return 1;
-		return -1;
-	}*/
 	
 	public static int IsGameOver(int[] squares){
 		boolean redLive = false, blackLive = false;

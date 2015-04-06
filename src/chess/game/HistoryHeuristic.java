@@ -10,7 +10,10 @@ import java.util.Arrays;
 
 public class HistoryHeuristic {
 	
-	protected final int m_HistoryTable[][] = new int[Constant.BOARD_NUMBER][Constant.BOARD_NUMBER];
+	//protected final int m_HistoryTable[][] = new int[Constant.BOARD_NUMBER][Constant.BOARD_NUMBER];
+	public final static int HISTORY_MOVE_SIZE = 1 << 16; 
+	
+	protected final int m_HistoryTable[] = new int[HISTORY_MOVE_SIZE];
 	protected final ChessMove m_TargetBuff[] = new ChessMove[100]; 
 	
 	public HistoryHeuristic(){
@@ -20,27 +23,15 @@ public class HistoryHeuristic {
 	}
 		
 	public void ResetHistoryTable(){
-		for (int i = 0; i < m_HistoryTable.length; ++i){
-			Arrays.fill(m_HistoryTable[i], 10);
-		}
-		
+		Arrays.fill(m_HistoryTable, 10);
 	}
 	
 	public int GetHistoryScore(ChessMove move){
-		int nFrom, nTo;
-		
-		nFrom = ChessLoadUtil.Src(move.Move);
-		nTo = ChessLoadUtil.Dst(move.Move);
-		
-		return m_HistoryTable[nFrom][nTo];
+		return m_HistoryTable[move.Move];
 	}
 	
 	public void EnterHistoryScore(ChessMove move,int depth){
-		int nFrom, nTo;
-		nFrom = ChessLoadUtil.Src(move.Move);
-		nTo = ChessLoadUtil.Dst(move.Move);
-
-		m_HistoryTable[nFrom][nTo] += 2<<depth;
+		m_HistoryTable[move.Move] += 2<<depth;
 	}
 	
 	public void MergeSort(ChessMove source[], int n, boolean direction){
