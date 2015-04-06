@@ -398,16 +398,7 @@ public class MoveGenerator {
 			sqSrc += nDelta;
 		}
 		
-		System.out.println("LegalKingFace true");
 		return true;
 	}
 
-	/*protected int AddMove(int nFromX,int nFromY, int nToX, int nToY,int nPly){
-		m_MoveList[nPly][m_nMoveCount].From.x = (byte) nFromX;
-		m_MoveList[nPly][m_nMoveCount].From.y = (byte) nFromY;
-		m_MoveList[nPly][m_nMoveCount].To.x = (byte) nToX;
-		m_MoveList[nPly][m_nMoveCount].To.y = (byte) nToY;
-		m_nMoveCount++;
-		return m_nMoveCount;
-	}*/
 }
