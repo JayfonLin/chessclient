@@ -1,13 +1,13 @@
-package chess.game;
+package chess.engine;
 
 /**
  * Created 2015-02-05
  * @author jeff
  */
 
-import chess.game.TranspositionTable.ENTRY_TYPE;
-import static chess.game.ChessLoadUtil.*;
-import static chess.game.Constant.*;
+import chess.engine.TranspositionTable.ENTRY_TYPE;
+import static chess.engine.ChessLoadUtil.*;
+import static chess.engine.Constant.*;
 
 public class NegaScout_TT_HH extends SearchEngine{
 	protected TranspositionTable TT;

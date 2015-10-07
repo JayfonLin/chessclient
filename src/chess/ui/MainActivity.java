@@ -6,11 +6,12 @@ package chess.ui;
  */
 
 import static chess.ui.ViewConstant.*;
-import static chess.game.Define.*;
+import static chess.engine.Define.*;
 
 import java.util.HashMap;
 
 import chess.activity.R;
+import chess.network.CTCPClient;
 import android.media.AudioManager;
 import android.media.SoundPool;
 import android.os.Bundle;
@@ -39,6 +40,8 @@ import android.widget.RelativeLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
 
+import chess.logic.CPlayGame;
+
 public class MainActivity extends Activity {
 
 	SoundPool soundPool;//声音池
@@ -53,6 +56,8 @@ public class MainActivity extends Activity {
 	PopupWindow depth_window;
 	RadioGroup radioGroup;
 	
+	public CPlayGame play_game;
+	
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -64,22 +69,18 @@ public class MainActivity extends Activity {
 		initApp();
 		initPm();//调整屏幕分辨率
 		initSound();//初始化声音资源
+		ConnectServer();
 		
 		gameView = new GameView(this);
 		setContentView(gameView);
 		
 		initViews();
-		popWindow();
+		
+		initGame();
 	}
 	
-	public void popWindow(){
-		new Handler().postDelayed(new Runnable() {
-			
-			@Override
-			public void run() {
-				showWindow();
-			}
-		}, 500);
+	public void initGame(){
+		play_game = CPlayGame.GetInstance();
 	}
 
 	public void initApp(){
@@ -92,6 +93,10 @@ public class MainActivity extends Activity {
         //设置横屏模式
 		setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
 		setVolumeControlStream(AudioManager.STREAM_MUSIC);//游戏过程中只允许多媒体音量,而不允许通化音量
+	}
+	
+	public void ConnectServer(){
+		CTCPClient client = CTCPClient.GetInstance();
 	}
 
 	public void initViews(){
@@ -163,6 +168,7 @@ public class MainActivity extends Activity {
 			public void onClick(View arg0) {
 				mPopupWindow.dismiss();
 				gameView.engine.SetSearchDepth(searchDepth);
+				play_game.StartupChessGame((byte)searchDepth);
 			};
 		});
 

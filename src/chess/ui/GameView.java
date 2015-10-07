@@ -6,9 +6,11 @@ package chess.ui;
  */
 
 import chess.activity.R;
-import chess.game.Define;
-import chess.game.MoveGenerator;
-import chess.game.NegaScout_TT_HH;
+import chess.engine.ChessLoadUtil;
+import chess.engine.Define;
+import chess.engine.MoveGenerator;
+import chess.engine.NegaScout_TT_HH;
+import chess.logic.CPlayGame;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -23,11 +25,15 @@ import android.view.MotionEvent;
 import android.view.View;
 
 import static chess.ui.ViewConstant.*;
-import static chess.game.Define.*;
-import static chess.game.ChessLoadUtil.*;
-import static chess.game.Constant.*;
+import static chess.engine.ChessLoadUtil.*;
+import static chess.engine.Constant.*;
+import static chess.engine.Define.*;
+
+import chess.logic.HandlerManager;
 
 public class GameView extends View{
+	
+	public static final int MSG_WHAT_CHESS_MOVE = 1; 
 
 	MainActivity father;
 	Bitmap[][] chessBitmap;//象棋棋子图片
@@ -56,6 +62,17 @@ public class GameView extends View{
 
 		@Override
 		public void handleMessage(Message msg) {
+			switch(msg.what){
+			case MSG_WHAT_CHESS_MOVE:
+				int move = msg.arg1;
+				EnermyChessMove(move);
+				break;
+				
+			default:
+				break;
+			}
+			
+			/*
 			seleFlag = toFlag = true;
 			int sqSrc, sqDst;
 			
@@ -87,6 +104,7 @@ public class GameView extends View{
 			postInvalidate();
 			LoadUtil.ChangeSide();
 			cmFlag = true;
+			*/
 		}
 		
 	};
@@ -109,6 +127,8 @@ public class GameView extends View{
 		engine = new NegaScout_TT_HH();
 		
 		endTime=zTime;//总时间	
+		
+		HandlerManager.GetInstance().SetGameViewHandler(handler);
 	}
 	
 	
@@ -129,6 +149,10 @@ public class GameView extends View{
 		case -1:
 			drawWinOrLoss(false);
 			break;
+		}
+		
+		if (!CPlayGame.GetInstance().IsStart()){
+			father.showWindow();
 		}
 	}
 	
@@ -343,11 +367,18 @@ public class GameView extends View{
 					ucpcSquares[sqDst] = ucpcSquares[sqSrc];
 					ucpcSquares[sqSrc] = 0;
 					father.playSound(sound_id, 0);
-					enermyAct(ucpcSquares);
+					//enermyAct(ucpcSquares);
 					
 					tox = FileX(sqDst)-FILE_LEFT;
 					toy = RankY(sqDst)-RANK_TOP;
 					toFlag = true;
+					
+					
+					cmFlag = false;
+					LoadUtil.ChangeSide();
+					int move = ChessLoadUtil.Move(sqSrc, sqDst);
+					CPlayGame.GetInstance().ChessMove(move);
+					
 				}else if (SameSide(ucpcSquares[sqSrc], ucpcSquares[sqDst])){
 					fromx = bzcol; fromy = bzrow;
 					seleFlag = true;
@@ -371,6 +402,27 @@ public class GameView extends View{
 	
 	public void drawSelection(Canvas canvas, int x, int y){
 		canvas.drawBitmap(selectBM,sXtart+(x+1)*xSpan-chessR,sYtart+(y+1)*ySpan-chessR, null);
+	}
+	
+	public void EnermyChessMove(int move){
+		
+		seleFlag = toFlag = true;
+		int sqSrc, sqDst;
+		
+		sqSrc = Src(move);
+		sqDst = Dst(move);
+		
+		ucpcSquares[sqDst] = ucpcSquares[sqSrc];
+		ucpcSquares[sqSrc] = 0;
+		
+		fromx = FileX(sqSrc)-FILE_LEFT;
+		fromy = RankY(sqSrc)-RANK_TOP;
+		tox = FileX(sqDst)-FILE_LEFT;
+		toy = RankY(sqDst)-RANK_TOP;
+
+		postInvalidate();
+		LoadUtil.ChangeSide();
+		cmFlag = true;
 	}
 	
 	public void enermyAct(int squares[]){

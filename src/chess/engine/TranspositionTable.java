@@ -1,4 +1,4 @@
-package chess.game;
+package chess.engine;
 
 /**
  * Created on 2015-02-05
@@ -7,8 +7,8 @@ package chess.game;
 
 import java.util.Random;
 
-import static chess.game.Constant.*;
-import static chess.game.ChessLoadUtil.*;
+import static chess.engine.ChessLoadUtil.*;
+import static chess.engine.Constant.*;
 
 public class TranspositionTable {
 	
@@ -23,8 +23,6 @@ public class TranspositionTable {
 		ENTRY_TYPE entry_type; //数据类型
 		short depth; //取得此值时的层次
 		short eval; //节点的值
-		
-		//int best_move; //对应的最佳走法
 	}
 	
 	private Random random;

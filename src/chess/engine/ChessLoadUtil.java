@@ -1,4 +1,4 @@
-package chess.game;
+package chess.engine;
 
 /**
  * Created on 2015-03-21
@@ -6,7 +6,7 @@ package chess.game;
  *
  */
 
-import static chess.game.Constant.*;
+import static chess.engine.Constant.*;
 public class ChessLoadUtil {
 
 	/**

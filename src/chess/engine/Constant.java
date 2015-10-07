@@ -1,4 +1,4 @@
-package chess.game;
+package chess.engine;
 
 /**
  * Created on 2015-03-21

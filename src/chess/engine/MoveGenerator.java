@@ -1,4 +1,4 @@
-package chess.game;
+package chess.engine;
 
 /**
  *
@@ -6,8 +6,8 @@ package chess.game;
  * @author jeff
  */
 
-import static chess.game.ChessLoadUtil.*;
-import static chess.game.Constant.*;
+import static chess.engine.ChessLoadUtil.*;
+import static chess.engine.Constant.*;
 
 public class MoveGenerator {
 	protected int nGenMoves;

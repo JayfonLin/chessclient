@@ -1,4 +1,4 @@
-package chess.game;
+package chess.engine;
 
 /**
  * 
@@ -6,8 +6,8 @@ package chess.game;
  * @author jeff
  */
 
-import static chess.game.ChessLoadUtil.InFort;
-import static chess.game.Constant.*;
+import static chess.engine.ChessLoadUtil.InFort;
+import static chess.engine.Constant.*;
 
 public abstract class SearchEngine {
 	

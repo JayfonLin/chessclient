@@ -5,7 +5,7 @@ package chess.ui;
  * @author jeff
  */
 
-import static chess.game.Constant.*;
+import static chess.engine.Constant.*;
 
 public class LoadUtil {
 	public static int sdPlayer = 0;                   // 轮到谁走，0=红方，1=黑方

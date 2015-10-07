@@ -1,7 +1,7 @@
-package chess.game;
+package chess.engine;
 
-import static chess.game.ChessLoadUtil.*;
-import static chess.game.Constant.*;
+import static chess.engine.ChessLoadUtil.*;
+import static chess.engine.Constant.*;
 
 
 /**
