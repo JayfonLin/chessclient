@@ -68,10 +68,12 @@ public class CPlayGame {
 		@Override
 		public void DoCommand(CBinUnpacker pack) {
 			int move = pack.ReadDWord();
+			byte is_kill = pack.ReadByte();
 			Handler handler = HandlerManager.GetInstance().GetGameViewHandler();
 			Message msg = new Message();
 			msg.what = GameView.MSG_WHAT_CHESS_MOVE;
 			msg.arg1 = move;
+			msg.arg2 = is_kill;
 			
 			handler.sendMessage(msg);
 		}

@@ -65,7 +65,11 @@ public class GameView extends View{
 			switch(msg.what){
 			case MSG_WHAT_CHESS_MOVE:
 				int move = msg.arg1;
+				int is_kill = msg.arg2;
+				
 				EnermyChessMove(move);
+				
+				
 				break;
 				
 			default:
