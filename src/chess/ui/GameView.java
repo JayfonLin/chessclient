@@ -7,6 +7,7 @@ package chess.ui;
 
 import chess.activity.R;
 import chess.engine.ChessLoadUtil;
+import chess.engine.ChessMove;
 import chess.engine.Define;
 import chess.engine.MoveGenerator;
 import chess.engine.NegaScout_TT_HH;
@@ -34,6 +35,7 @@ import chess.logic.HandlerManager;
 public class GameView extends View{
 	
 	public static final int MSG_WHAT_CHESS_MOVE = 1; 
+	public static final int MSG_WHAT_CHESS_WITHDRAW = 2;
 
 	MainActivity father;
 	Bitmap[][] chessBitmap;//象棋棋子图片
@@ -69,49 +71,48 @@ public class GameView extends View{
 				
 				EnermyChessMove(move);
 				
+				switch(is_kill){
+				case 0:
+					father.playSound(SOUND_MOVE2, 0);
+					break;
+					
+				case 1:
+					father.playSound(SOUND_CAPTURE2, 0);
+					break;
+					
+				case 2:
+					LoadUtil.ChangeSide();
+					cmFlag = true;
+					return;
+					
+				default:
+					father.playSound(SOUND_MOVE2, 0);
+					break;
+				}
 				
+				break;
+			
+			case MSG_WHAT_CHESS_WITHDRAW:
+				int _move = msg.arg1;
+				int chess_id = msg.arg2;
+				UnMakeMove(_move, chess_id);
 				break;
 				
 			default:
 				break;
 			}
-			
-			/*
-			seleFlag = toFlag = true;
-			int sqSrc, sqDst;
-			
-			sqSrc = Src(engine.m_cmBestMove.Move);
-			sqDst = Dst(engine.m_cmBestMove.Move);
-			fromx = FileX(sqSrc)-FILE_LEFT;
-			fromy = RankY(sqSrc)-RANK_TOP;
-			tox = FileX(sqDst)-FILE_LEFT;
-			toy = RankY(sqDst)-RANK_TOP;
-			switch(msg.what){
-			case 0:
-				father.playSound(SOUND_MOVE2, 0);
-				break;
-				
-			case 1:
-				father.playSound(SOUND_CAPTURE2, 0);
-				break;
-				
-			case 2:
-				LoadUtil.ChangeSide();
-				cmFlag = true;
-				return;
-				
-			default:
-				father.playSound(SOUND_MOVE2, 0);
-				break;
-			}
-	
-			postInvalidate();
-			LoadUtil.ChangeSide();
-			cmFlag = true;
-			*/
+		
 		}
 		
 	};
+	
+	
+
+	@Override
+	protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
+		//setMeasuredDimension((int) ViewConstant.screen_width, (int)(ViewConstant.screen_height*0.9f));
+		super.onMeasure(widthMeasureSpec, heightMeasureSpec);
+	}
 
 	public GameView(Context context) {
 		super(context);
@@ -285,7 +286,7 @@ public class GameView extends View{
 		background = Bitmap.createScaledBitmap(BitmapFactory.decodeResource(getResources(), R.drawable.background), 
 				(int)screen_width, (int)screen_height, false); //背景图
 		boardFrame=Bitmap.createScaledBitmap(BitmapFactory.decodeResource(getResources(), R.drawable.floor2), 
-				(int)screen_width, (int)screen_height, false); //棋盘
+				(int)screen_width, (int)(screen_height*0.9f), false); //棋盘
 		selectBM = Bitmap.createScaledBitmap(BitmapFactory.decodeResource(
 				getResources(), R.drawable.selected), chessD, chessD, false);
 	
@@ -427,6 +428,16 @@ public class GameView extends View{
 		postInvalidate();
 		LoadUtil.ChangeSide();
 		cmFlag = true;
+	}
+	
+	public void UnMakeMove(int move, int chess_id){
+		int sqSrc = ChessLoadUtil.Src(move);
+		int sqDst = ChessLoadUtil.Dst(move);
+		ucpcSquares[sqSrc] = ucpcSquares[sqDst];
+		ucpcSquares[sqDst] = chess_id;
+		
+		postInvalidate();
+		LoadUtil.ChangeSide();
 	}
 	
 	public void enermyAct(int squares[]){

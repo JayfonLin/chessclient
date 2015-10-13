@@ -26,6 +26,7 @@ import android.view.Gravity;
 import android.view.Menu;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowManager;
 import android.view.ViewGroup.LayoutParams;
@@ -33,6 +34,7 @@ import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemSelectedListener;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.LinearLayout;
 import android.widget.PopupWindow;
 import android.widget.RadioGroup;
 import android.widget.RadioGroup.OnCheckedChangeListener;
@@ -55,6 +57,8 @@ public class MainActivity extends Activity {
 	RelativeLayout select_depth_rl;
 	PopupWindow depth_window;
 	RadioGroup radioGroup;
+	LinearLayout action_ll;
+	LinearLayout main_layout;
 	
 	public CPlayGame play_game;
 	
@@ -71,8 +75,6 @@ public class MainActivity extends Activity {
 		initSound();//初始化声音资源
 		ConnectServer();
 		
-		gameView = new GameView(this);
-		setContentView(gameView);
 		
 		initViews();
 		
@@ -100,6 +102,20 @@ public class MainActivity extends Activity {
 	}
 
 	public void initViews(){
+		main_layout = new LinearLayout(this);
+		main_layout.setOrientation(LinearLayout.VERTICAL); 
+		
+		gameView = new GameView(this);
+		ViewGroup.LayoutParams lp = new ViewGroup.LayoutParams((int) (ViewConstant.screen_width), (int) (ViewConstant.screen_height*0.9f));
+		lp.height = (int) (ViewConstant.screen_height*0.9f);
+		main_layout.addView(gameView, lp);
+		
+		action_ll = (LinearLayout) getLayoutInflater().inflate(R.layout.chess_action_bar, null);
+		main_layout.addView(action_ll);
+		
+		//setContentView(gameView, lp);
+		setContentView(main_layout);
+		
 		View popupView = getLayoutInflater().inflate(R.layout.select_depth_popup, null);
 		mPopupWindow = new PopupWindow(popupView, LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT, true);
 		mPopupWindow.setTouchable(true);
@@ -121,6 +137,7 @@ public class MainActivity extends Activity {
 				depth_window.showAtLocation(gameView, Gravity.CENTER, 0, 0);
 			}
 		});
+		
 		
 		radioGroup = (RadioGroup) depth_select_popup.findViewById(R.id.radioGroup);
 		radioGroup.setOnCheckedChangeListener(new OnCheckedChangeListener() {
@@ -215,6 +232,11 @@ public class MainActivity extends Activity {
         
 		ViewConstant.initAll(dm);
     }
+	
+	public void OnWithdrawButtonClick(View v)  
+    {  
+		CPlayGame.GetInstance().UnmakeMove();
+    }  
 
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {

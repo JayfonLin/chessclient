@@ -62,6 +62,15 @@ public class CPlayGame {
 		
 	}
 	
+	public void UnmakeMove(){
+		
+		CTCPClient client = CTCPClient.GetInstance();
+		CBinPacker packet = new CBinPacker();
+		packet.PackDWord(CProto.CMD_UNMAKE_MOVE);
+		client.Send(packet);
+		
+	}
+	
 	public class OnEnermyChessMove implements IPackageHandler
 	{
 
@@ -75,6 +84,26 @@ public class CPlayGame {
 			msg.arg1 = move;
 			msg.arg2 = is_kill;
 			
+			handler.sendMessage(msg);
+		}
+		
+	}
+	
+	public class OnUnmakeMove implements IPackageHandler
+	{
+
+		@Override
+		public void DoCommand(CBinUnpacker pack) {
+			System.out.println("OnUnmakeMove");
+			int move = pack.ReadDWord();
+			byte chess_id = pack.ReadByte();
+			
+			Message msg = new Message();
+			msg.what = GameView.MSG_WHAT_CHESS_WITHDRAW;
+			msg.arg1 = move;
+			msg.arg2 = chess_id;
+			
+			Handler handler = HandlerManager.GetInstance().GetGameViewHandler();
 			handler.sendMessage(msg);
 		}
 		

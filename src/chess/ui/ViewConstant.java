@@ -38,29 +38,13 @@ public class ViewConstant {
 	public static float ySpan=48.0f*yZoom;
 	
 	public static float scoreWidth = 7*xZoom*4f;//时间数字间隔
-/*	public static float sXtartCk;
-	public static float sYtartCk;//第二窗口的起始坐标
-*/	
 	public static float windowWidth=200*xZoom;//窗口的大小
 	public static float windowHeight=400*xZoom;
-	
-	/*public static float windowXstartLeft=sXtart+(5*xSpan-windowWidth)/2*xZoom;//小窗口的起始坐标
-	public static float windowXstartRight=sYtart+5*xSpan+(5*xSpan-windowWidth)/2*xZoom;
-	public static float windowYstart=sYtart+ySpan*4*xZoom;*/
 	
 	
 	public static float chessR=30*xZoom;//棋子半径
 	public static float fblRatio=0.6f*xZoom;//棋子缩放比例
 	
-	/*public static Bitmap scaleToFit(Bitmap bm,float fblRatio)//缩放图片的方法
-    {
-    	int width = bm.getWidth(); //图片宽度
-    	int height = bm.getHeight();//图片高度
-    	Matrix matrix = new Matrix(); 
-    	matrix.postScale((float)fblRatio, (float)fblRatio);//图片等比例缩小为原来的fblRatio倍
-    	Bitmap bmResult = Bitmap.createBitmap(bm, 0, 0, width, height, matrix, true);//声明位图        	
-    	return bmResult;
-    }*/
 	
 	public static void initAll(DisplayMetrics dm){
 		initZoom(dm);
@@ -69,11 +53,14 @@ public class ViewConstant {
 	
 	public static void initZoom(DisplayMetrics dm){
 		
-		int tempHeight=(int) (height=dm.heightPixels);
-        int tempWidth=(int) (width=dm.widthPixels); 
-        screen_height = (int) (height=dm.heightPixels);
-        screen_width = (int) (width=dm.widthPixels); 
-        //
+		screen_height = dm.heightPixels;
+        screen_width = dm.widthPixels;
+		
+		int tempHeight = (int)screen_height;
+		tempHeight *= 0.9f;
+        int tempWidth=(int)screen_width; 
+         
+       
         if(tempHeight>tempWidth)
         {
         	height=tempHeight;

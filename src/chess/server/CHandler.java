@@ -16,8 +16,11 @@ public class CHandler {
 	
 	static final Map<Integer, IPackageHandler> HANDLERS = new HashMap<Integer, IPackageHandler>();
 	
+	
 	static {
 		HANDLERS.put(CProto.CHESS_MOVE, chess.logic.CPlayGame.GetInstance().new OnEnermyChessMove());
+		
+		HANDLERS.put(CProto.CMD_UNMAKE_MOVE, chess.logic.CPlayGame.GetInstance().new OnUnmakeMove());
 	}
 	
 	public static void OnPackage(CBinUnpacker pack){
